@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compilar",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-classpath",
+                "lib/jade.jar",
+                "-d",
+                "bin",
+                "src/*.java"
+            ],
+            "group": "build",
+            "detail": "Compila todos los archivos Java"
+        },
+        {
+            "label": "Ejecutar JADE",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-classpath",
+                "lib/jade.jar:bin",
+                "jade.Boot",
+                "-agents",
+                "MainAgent:MainAgent"
+            ],
+            "group": "test",
+            "dependsOn": "Compilar",
+            "problemMatcher": []
+        }
+    ]
+}
