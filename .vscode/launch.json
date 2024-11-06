@@ -5,8 +5,7 @@
             "type": "java",
             "name": "Depurar MainAgent",
             "request": "launch",
-            "mainClass": "MainAgent",
-            "projectName": "PSI"
+            "mainClass": "MainAgent"
         }
     ]
 }
