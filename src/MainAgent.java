@@ -1,7 +1,10 @@
-public class MainAgent {
-    public static void main(String[] args) {
-        // Código de inicialización de tu agente
+import jade.core.Agent;
+
+public class MainAgent extends Agent {
+    @Override
+    protected void setup() {
+        // Código de inicialización del agente
         System.out.println("Ejecutando MainAgent...");
-        // Aquí puedes agregar la lógica para iniciar JADE y cargar tu agente
+        // Aquí puedes agregar comportamientos u otros métodos para tu agente
     }
 }
