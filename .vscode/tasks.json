@@ -16,7 +16,7 @@
             "detail": "Compila todos los archivos Java"
         },
         {
-            "label": "Ejecutar JADE",
+            "label": "Ejecutar partida",
             "type": "shell",
             "command": "java",
             "args": [
@@ -24,7 +24,7 @@
                 "'lib/jade.jar;bin'",
                 "jade.Boot",
                 "-agents",
-                "MainAgent:MainAgent"
+                "'MainAgent:MainAgent;RandomAgent1:RandomAgent;RandomAgent2:RandomAgent'"
             ],
             "group": "test",
             "dependsOn": "Compilar",
