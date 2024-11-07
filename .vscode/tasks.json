@@ -21,7 +21,7 @@
             "command": "java",
             "args": [
                 "-classpath",
-                "lib/jade.jar:bin",
+                "'lib/jade.jar;bin'",
                 "jade.Boot",
                 "-agents",
                 "MainAgent:MainAgent"
