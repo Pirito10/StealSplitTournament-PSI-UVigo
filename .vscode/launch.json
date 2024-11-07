@@ -5,7 +5,11 @@
             "type": "java",
             "name": "Depurar MainAgent",
             "request": "launch",
-            "mainClass": "MainAgent"
+            "mainClass": "jade.Boot",
+            "args": [
+                "-agents",
+                "MainAgent:MainAgent"
+            ]
         }
     ]
 }
