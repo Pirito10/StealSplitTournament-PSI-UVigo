@@ -1,12 +1,15 @@
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 
 public class RandomAgent extends Agent {
 
-    private String ID; // Variable para almacenar el ID del agente
+    private int ID, N, R; // Variable para almacenar el ID del agente, el número de jugadores y de rondas
+    private float F; // Variable para almacenar el porcentaje de comisión
 
     @Override
     protected void setup() {
@@ -18,30 +21,52 @@ public class RandomAgent extends Agent {
             e.printStackTrace();
         }
 
-        // Obtenemos el ID del agente (último carácter de su nombre, JugadorAgentX)
-        if (getLocalName().matches("RandomAgent\\d+")) {
-            ID = getLocalName().replace("RandomAgent", "");
-        } else {
-            ID = "null";
-        }
+        System.out.println("[Jugador X] Se ha inicializado un agente: " + getLocalName());
 
-        // Mensaje de inicialización
-        System.out.println("[Jugador " + ID + "] Se ha inicializado un agente: " + getLocalName());
-
-        // Registramos el agente en el DF (Directory Facilitator)
+        // Creamos una descripción del agente
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID()); // AID = Agent ID
         ServiceDescription sd = new ServiceDescription();
         sd.setName(getLocalName()); // Nombre del servicio
-        sd.setType("jugador"); // Tipo de servicio
+        sd.setType("player"); // Tipo de servicio
         dfd.addServices(sd);
 
+        // Registramos el agente en el DF (Directory Facilitator)
         try {
             DFService.register(this, dfd);
-            System.out.println("[Jugador " + ID + "] Agente registrado en el DF");
+            System.out.println("[Jugador X] Agente registrado en el DF");
         } catch (FIPAException e) {
             e.printStackTrace();
+            doDelete();
         }
+
+        // Comportamiento que se pone a la espera de recibir un mensaje
+        addBehaviour(new CyclicBehaviour() {
+            @Override
+            public void action() {
+                // Esperamos a recibir un mensaje
+                ACLMessage msg = blockingReceive();
+                String message = msg.getContent();
+
+                System.out.println("[Jugador X] Mensaje recibido: " + message);
+
+                // Si es un mensaje de preparación de la competición
+                if (message.startsWith("Id")) {
+                    // Extraemos del contenido el ID y los parámetros del torneo
+                    String[] partes = message.split("#");
+                    ID = Integer.parseInt(partes[1]);
+
+                    partes = partes[2].split(",");
+                    N = Integer.parseInt(partes[0]);
+                    R = Integer.parseInt(partes[1]);
+                    F = Float.parseFloat(partes[2]);
+
+                } else {
+                    /* STEP 2 */
+                }
+
+            }
+        });
     }
 
     @Override
@@ -53,6 +78,7 @@ public class RandomAgent extends Agent {
         } catch (FIPAException e) {
             e.printStackTrace();
         }
+
         System.out.println("[Jugador " + ID + "] Se ha terminado el agente");
     }
 }
