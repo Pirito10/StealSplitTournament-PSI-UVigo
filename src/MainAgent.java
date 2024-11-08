@@ -16,7 +16,7 @@ public class MainAgent extends Agent {
     // Variables para almacenar el número de jugadores, de rondas y el porcentaje de
     // comisión
     private int N;
-    private final int R = 3;
+    private final int R = 2;
     private final double F = 0.1;
 
     @Override
@@ -94,7 +94,7 @@ public class MainAgent extends Agent {
 
                 // Iteramos sobre el número de rondas
                 for (int round = 1; round <= R; round++) {
-                    System.out.println("[Main] Iniciando la ronda " + round + "...");
+                    System.out.println("\n[Main] Iniciando la ronda " + round + "...");
 
                     // Iteramos sobre cada pareja de jugadores
                     for (int i = 0; i < players.size() - 1; i++) {
@@ -115,8 +115,15 @@ public class MainAgent extends Agent {
                             message = "Action";
 
                             sendMessage(ACLMessage.REQUEST, player1, message);
+                            ACLMessage reply_player1 = blockingReceive();
+                            System.out.println(
+                                    "[Main] Mensaje recibido del jugador con ID " + i + ":"
+                                            + reply_player1.getContent());
                             sendMessage(ACLMessage.REQUEST, player2, message);
-
+                            ACLMessage reply_player2 = blockingReceive();
+                            System.out.println(
+                                    "[Main] Mensaje recibido del jugador con ID " + j + ":"
+                                            + reply_player2.getContent());
                         }
                     }
                 }
