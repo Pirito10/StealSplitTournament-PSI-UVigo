@@ -10,7 +10,9 @@ import jade.lang.acl.ACLMessage;
 
 public class RandomAgent extends Agent {
 
+    @SuppressWarnings("unused")
     private int ID, N, R; // Variable para almacenar el ID del agente, el número de jugadores y de rondas
+    @SuppressWarnings("unused")
     private float F; // Variable para almacenar el porcentaje de comisión
 
     @Override
@@ -50,7 +52,7 @@ public class RandomAgent extends Agent {
                 ACLMessage msg = blockingReceive();
                 String message = msg.getContent();
 
-                // Si es un mensaje de preparación de la competición
+                // Si es un mensaje de preparación de la competición...
                 if (message.startsWith("Id")) {
                     // Extraemos del contenido el ID y los parámetros del torneo
                     String[] partes = message.split("#");
@@ -63,25 +65,27 @@ public class RandomAgent extends Agent {
 
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Si es un mensaje de nueva ronda
+                    // Si es un mensaje de nueva ronda...
                 } else if (message.startsWith("NewGame")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Extraemos del contenido los IDs
                     String[] partes = message.split("#");
                     partes = partes[1].split(",");
-                    int player1 = Integer.parseInt(partes[0]);
-                    int player2 = Integer.parseInt(partes[0]);
-
                     /**
                      * TODO
                      * ? ¿Sirve de algo saber contra quién juego en el agente random?
+                     * int player1 = Integer.parseInt(partes[0]);
+                     * int player2 = Integer.parseInt(partes[0]);
+                     * 
+                     * 
                      * if (player1 == ID) {
                      * enemy = player2;
                      * } else {
                      * enemy = player1;
                      * }
                      */
+                    // Si es un mensaje de solicitud de acción...
                 } else if (message.startsWith("Action")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
@@ -93,6 +97,11 @@ public class RandomAgent extends Agent {
                     sendReply(ACLMessage.INFORM, msg, reply);
 
                     System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
+
+                    // Si es un mensaje de resultados...
+                } else if (message.startsWith("Results")) {
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                    // ? ¿De que sirve saber los resultados de cada jugada en el agente random?
                 }
 
             }
