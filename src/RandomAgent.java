@@ -48,8 +48,6 @@ public class RandomAgent extends Agent {
                 ACLMessage msg = blockingReceive();
                 String message = msg.getContent();
 
-                System.out.println("[Jugador X] Mensaje recibido: " + message);
-
                 // Si es un mensaje de preparación de la competición
                 if (message.startsWith("Id")) {
                     // Extraemos del contenido el ID y los parámetros del torneo
@@ -61,8 +59,25 @@ public class RandomAgent extends Agent {
                     R = Integer.parseInt(partes[1]);
                     F = Float.parseFloat(partes[2]);
 
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+
+                    // Si es un mensaje de nueva ronda
+                } else if (message.startsWith("NewGame")) {
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+
+                    // Extraemos del contenido los IDs
+                    String[] partes = message.split("#");
+                    partes = partes[1].split(",");
+                    int player1 = Integer.parseInt(partes[0]);
+                    int player2 = Integer.parseInt(partes[0]);
+
+                    if (player1 == ID) {
+                        // enemy = player2;
+                    } else {
+                        // enemy = player1;
+                    }
                 } else {
-                    /* STEP 2 */
+                    /* STEP 3 */
                 }
 
             }
