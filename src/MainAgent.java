@@ -123,6 +123,7 @@ public class MainAgent extends Agent {
 
                             // Enviamos el mensaje al primer jugador
                             sendMessage(ACLMessage.REQUEST, player1, message);
+                            System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
                             // Esperamos la respuesta
                             ACLMessage reply_player1 = blockingReceive();
                             System.out.println(
@@ -133,6 +134,7 @@ public class MainAgent extends Agent {
 
                             // Enviamos el mensaje al segundo jugador
                             sendMessage(ACLMessage.REQUEST, player2, message);
+                            System.out.println("[Main] Mensaje enviado a jugador con ID " + j + ": " + message);
                             // Esperamos la respuesta
                             ACLMessage reply_player2 = blockingReceive();
                             System.out.println(
@@ -141,7 +143,18 @@ public class MainAgent extends Agent {
                             // Extraemos del contenido la acción seleccionada
                             String action_player2 = reply_player2.getContent().split("#")[1];
 
+                            // Procesamos el resultado
                             int payoffs[] = getPayoffs(action_player1, action_player2);
+
+                            // Construímos el mensaje de resultados
+                            message = "Results#" + i + "," + j + "#" + action_player1 + "," + action_player2 + "#"
+                                    + payoffs[0] + "," + payoffs[1];
+
+                            // Enviamos los mensajes
+                            sendMessage(ACLMessage.INFORM, player1, message);
+                            sendMessage(ACLMessage.INFORM, player2, message);
+                            System.out.println(
+                                    "[Main] Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
                         }
                     }
                 }
