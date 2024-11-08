@@ -1,3 +1,5 @@
+import java.util.Random;
+
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -71,13 +73,26 @@ public class RandomAgent extends Agent {
                     int player1 = Integer.parseInt(partes[0]);
                     int player2 = Integer.parseInt(partes[0]);
 
-                    if (player1 == ID) {
-                        // enemy = player2;
-                    } else {
-                        // enemy = player1;
-                    }
+                    /**
+                     * TODO
+                     * ? ¿Sirve de algo saber contra quién juego en el agente random?
+                     * if (player1 == ID) {
+                     * enemy = player2;
+                     * } else {
+                     * enemy = player1;
+                     * }
+                     */
                 } else if (message.startsWith("Action")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+
+                    // Seleccionamos una respuesta aleatoriamente y construímos el mensaje
+                    String action = new Random().nextBoolean() ? "D" : "C";
+                    String reply = "Action#" + action;
+
+                    // Enviamos el mensaje
+                    sendReply(ACLMessage.INFORM, msg, reply);
+
+                    System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
                 }
 
             }
@@ -95,5 +110,13 @@ public class RandomAgent extends Agent {
         }
 
         System.out.println("[Jugador " + ID + "] Se ha terminado el agente");
+    }
+
+    // Método para enviar un mensaje a un agente
+    public void sendReply(int performative, ACLMessage original_message, String message) {
+        ACLMessage msg = original_message.createReply();
+        msg.setContent(message);
+        msg.setPerformative(performative);
+        send(msg);
     }
 }
