@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -17,7 +16,7 @@ public class MainAgent extends Agent {
     // Variables para almacenar el número de jugadores, de rondas y el porcentaje de
     // comisión
     private int N;
-    private final int R = 100;
+    private final int R = 3;
     private final double F = 0.1;
 
     @Override
@@ -88,12 +87,31 @@ public class MainAgent extends Agent {
                     String message = "Id#" + i + "#" + N + "," + R + "," + F;
 
                     // Enviamos el mensaje
-                    ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                    msg.addReceiver(player);
-                    msg.setContent(message);
-                    send(msg);
+                    sendMessage(ACLMessage.INFORM, player, message);
 
                     System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
+                }
+
+                // Iteramos sobre el número de rondas
+                for (int round = 1; round <= R; round++) {
+                    System.out.println("[Main] Iniciando la ronda " + round + "...");
+
+                    // Iteramos sobre cada pareja de jugadores
+                    for (int i = 0; i < players.size() - 1; i++) {
+                        for (int j = i + 1; j < players.size(); j++) {
+                            // Obtenemos los AID de los jugadores, y construímos su mensaje
+                            AID player1 = players.get(i);
+                            AID player2 = players.get(j);
+                            String message = "NewGame#" + i + "#" + j;
+
+                            // Enviamos los mensajes
+                            sendMessage(ACLMessage.INFORM, player1, message);
+                            sendMessage(ACLMessage.INFORM, player2, message);
+
+                            System.out.println(
+                                    "[Main] Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
+                        }
+                    }
                 }
             }
         });
@@ -102,5 +120,13 @@ public class MainAgent extends Agent {
     @Override
     protected void takeDown() {
         System.out.println("[Main] Se ha terminado el agente principal");
+    }
+
+    // Método para enviar un mensaje a un agente
+    public void sendMessage(int performative, AID receiver, String message) {
+        ACLMessage msg = new ACLMessage(performative);
+        msg.setContent(message);
+        msg.addReceiver(receiver);
+        send(msg);
     }
 }
