@@ -110,6 +110,13 @@ public class MainAgent extends Agent {
 
                             System.out.println(
                                     "[Main] Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
+
+                            // Construímos el mensaje de solicitud de acción
+                            message = "Action";
+
+                            sendMessage(ACLMessage.REQUEST, player1, message);
+                            sendMessage(ACLMessage.REQUEST, player2, message);
+
                         }
                     }
                 }

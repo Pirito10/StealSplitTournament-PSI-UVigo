@@ -76,8 +76,8 @@ public class RandomAgent extends Agent {
                     } else {
                         // enemy = player1;
                     }
-                } else {
-                    /* STEP 3 */
+                } else if (message.startsWith("Action")) {
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
                 }
 
             }
