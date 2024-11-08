@@ -11,13 +11,20 @@ import jade.lang.acl.ACLMessage;
 
 public class MainAgent extends Agent {
 
-    // Lista para almacenar los AID de los jugadores
-    private ArrayList<AID> players = new ArrayList<>();
     // Variables para almacenar el número de jugadores, de rondas y el porcentaje de
     // comisión
     private int N;
     private final int R = 2;
     private final double F = 0.1;
+
+    // Lista para almacenar los AID de los jugadores
+    private ArrayList<AID> players = new ArrayList<>();
+
+    // Matriz con los payoffs para cada
+    private final int[][][] matrix = {
+            { { 2, 2 }, { 0, 4 } },
+            { { 4, 0 }, { 0, 0 } }
+    };
 
     @Override
     protected void setup() {
@@ -114,16 +121,27 @@ public class MainAgent extends Agent {
                             // Construímos el mensaje de solicitud de acción
                             message = "Action";
 
+                            // Enviamos el mensaje al primer jugador
                             sendMessage(ACLMessage.REQUEST, player1, message);
+                            // Esperamos la respuesta
                             ACLMessage reply_player1 = blockingReceive();
                             System.out.println(
                                     "[Main] Mensaje recibido del jugador con ID " + i + ":"
                                             + reply_player1.getContent());
+                            // Extraemos del contenido la acción seleccionada
+                            String action_player1 = reply_player1.getContent().split("#")[1];
+
+                            // Enviamos el mensaje al segundo jugador
                             sendMessage(ACLMessage.REQUEST, player2, message);
+                            // Esperamos la respuesta
                             ACLMessage reply_player2 = blockingReceive();
                             System.out.println(
                                     "[Main] Mensaje recibido del jugador con ID " + j + ":"
                                             + reply_player2.getContent());
+                            // Extraemos del contenido la acción seleccionada
+                            String action_player2 = reply_player2.getContent().split("#")[1];
+
+                            int payoffs[] = getPayoffs(action_player1, action_player2);
                         }
                     }
                 }
@@ -142,5 +160,26 @@ public class MainAgent extends Agent {
         msg.setContent(message);
         msg.addReceiver(receiver);
         send(msg);
+    }
+
+    // Método para obtener los payoffs de un enfrentamiento
+    public int[] getPayoffs(String action_player1, String action_player2) {
+        int index_player1, index_player2;
+
+        // Obtenemos los índices de la matriz
+        if (action_player1.equals("C")) {
+            index_player1 = 0;
+        } else {
+            index_player1 = 1;
+        }
+
+        if (action_player2.equals("C")) {
+            index_player2 = 0;
+        } else {
+            index_player2 = 1;
+        }
+
+        // Obtenemos los payoffs de la matriz
+        return matrix[index_player1][index_player2];
     }
 }
