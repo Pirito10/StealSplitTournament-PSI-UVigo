@@ -16,7 +16,7 @@ public class MainAgent extends Agent {
     // Variables para almacenar el número de jugadores, de rondas y el porcentaje de
     // comisión
     private int N;
-    private final int R = 4;
+    private final int R = 100;
     private final double F = 0.1;
 
     // Lista para almacenar los AID de los jugadores
@@ -150,7 +150,7 @@ public class MainAgent extends Agent {
                             // Esperamos la respuesta
                             ACLMessage reply_player1 = blockingReceive();
                             System.out.println(
-                                    "[Main] Mensaje recibido del jugador con ID " + i + ":"
+                                    "[Main] Mensaje recibido del jugador con ID " + i + ": "
                                             + reply_player1.getContent());
                             // Extraemos del contenido la acción seleccionada
                             String action_player1 = reply_player1.getContent().split("#")[1];
@@ -161,7 +161,7 @@ public class MainAgent extends Agent {
                             // Esperamos la respuesta
                             ACLMessage reply_player2 = blockingReceive();
                             System.out.println(
-                                    "[Main] Mensaje recibido del jugador con ID " + j + ":"
+                                    "[Main] Mensaje recibido del jugador con ID " + j + ": "
                                             + reply_player2.getContent());
                             // Extraemos del contenido la acción seleccionada
                             String action_player2 = reply_player2.getContent().split("#")[1];
@@ -208,6 +208,40 @@ public class MainAgent extends Agent {
 
                         // Enviamos el mensaje
                         sendMessage(ACLMessage.REQUEST, player, message);
+                        System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
+                        // Esperamos la respuesta
+                        ACLMessage reply = blockingReceive();
+                        System.out
+                                .println("[Main] Mensaje recibido del jugador con ID " + i + ": " + reply.getContent());
+
+                        // Extraemos del contenido la acción y la cantidad
+                        String action = reply.getContent().split("#")[0];
+                        double amount = Double.parseDouble(reply.getContent().split("#")[1]);
+
+                        // Si la acción es comprar...
+                        if (action.equals("Buy")) {
+                            // Comprobamos si se puede realizar la compra
+                            if (amount * getIndexValue(round) <= totalPayoffs.get(player)) {
+                                // Quitamos del payoff la cantidad gastada
+                                double newPayoff = round(totalPayoffs.get(player) - (amount * getIndexValue(round)));
+                                totalPayoffs.put(player, newPayoff);
+                                // Añadimos los stocks comprados
+                                double newStocks = round(totalStocks.get(player) + amount);
+                                totalStocks.put(player, newStocks);
+                            }
+                            // Si la acción es vender...
+                        } else {
+                            // Comprobamos si se puede realizar la venta
+                            if (amount <= totalStocks.get(player)) {
+                                // Quitamos los stocks vendidos
+                                double newStocks = round(totalStocks.get(player) - amount);
+                                totalStocks.put(player, newStocks);
+                                // Añadimos el payoff obtenido, aplicando la comisión de venta
+                                double newPayoff = round(totalPayoffs.get(player)
+                                        + ((amount * getIndexValue(round)) * (1 - F)));
+                                totalPayoffs.put(player, newPayoff);
+                            }
+                        }
                     }
                 }
             }
@@ -250,7 +284,7 @@ public class MainAgent extends Agent {
 
     // Método que calcula el valor del stock en función de la ronda
     public double getIndexValue(int round) {
-        double indexValue = 100 * Math.log(round + 1) + 50;
+        double indexValue = Math.log(round + 1);
         return round(indexValue);
     }
 
