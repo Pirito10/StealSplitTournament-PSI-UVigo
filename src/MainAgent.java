@@ -196,9 +196,9 @@ public class MainAgent extends Agent {
                         AID player = players.get(i);
                         // Obtenemos su payoff de la ronda
                         int roundPayoff = roundPayoffs.get(player);
-                        // TODO aplicar el valor de inflación
-                        // Obtenemos su payoff acumulado
-                        double totalPayoff = totalPayoffs.get(player);
+                        // Obtenemos su payoff acumulado y le aplicamos el índice de inflación
+                        double totalPayoff = round(totalPayoffs.get(player) * (1 - getInflationRate(round)));
+                        totalPayoffs.put(player, totalPayoff);
                         // Obtenemos sus stocks
                         double stocks = totalStocks.get(player);
 
