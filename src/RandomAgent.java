@@ -154,6 +154,12 @@ public class RandomAgent extends Agent {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
                     // TODO
                     // ? ¿De qué sirve saber el payoff y los stocks en el agente random?
+
+                    // Si es un mensaje de fin de torneo...
+                } else if (message.startsWith("GameOver")) {
+                    System.out.println("[Jugador ]" + ID + "] Mensaje recibido: " + message);
+                    // TODO
+                    // ? ¿De qué sirve saber que ha terminado el torneo en el agente random?
                 }
 
             }
