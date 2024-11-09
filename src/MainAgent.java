@@ -28,9 +28,6 @@ public class MainAgent extends Agent {
             { { 4, 0 }, { 0, 0 } }
     };
 
-    // Formateador para limitar a dos decimales
-    private static final DecimalFormat df = new DecimalFormat("#.##");
-
     @Override
     protected void setup() {
 
@@ -254,12 +251,19 @@ public class MainAgent extends Agent {
     // Método que calcula el valor del stock en función de la ronda
     public double getIndexValue(int round) {
         double indexValue = 100 * Math.log(round + 1) + 50;
-        return Double.parseDouble(df.format(indexValue));
+        return round(indexValue);
     }
 
     // Método que calcula la tasa de inflación en función de la ronda
     public double getInflationRate(int round) {
         double inflationRate = 0.5 + 0.5 * Math.sin(round * Math.PI / 10);
-        return Double.parseDouble(df.format(inflationRate));
+        return round(inflationRate);
+    }
+
+    // Método para limitar valores a dos dígitos decimales
+    public double round(double value) {
+        // Formateador para limitar a dos decimales
+        DecimalFormat df = new DecimalFormat("#.##");
+        return Double.parseDouble(df.format(value));
     }
 }
