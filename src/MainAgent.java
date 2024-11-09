@@ -202,6 +202,7 @@ public class MainAgent extends Agent {
                         // Obtenemos sus stocks
                         double stocks = totalStocks.get(player);
 
+                        // Construímos el mensaje de fin de ronda
                         String message = "RoundOver#" + i + "#" + roundPayoff + "#" + totalPayoff + "#"
                                 + getInflationRate(round)
                                 + "#" + stocks + "#" + getIndexValue(round);
@@ -242,6 +243,14 @@ public class MainAgent extends Agent {
                                 totalPayoffs.put(player, newPayoff);
                             }
                         }
+
+                        // Construímos el mensaje de contabilidad
+                        message = "Accounting#" + i + "#" + totalPayoffs.get(player) + "#"
+                                + totalStocks.get(player);
+
+                        // Enviamos el mensaje
+                        sendMessage(ACLMessage.INFORM, player, message);
+                        System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
                     }
                 }
             }
