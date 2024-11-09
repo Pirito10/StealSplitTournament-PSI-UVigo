@@ -261,7 +261,7 @@ public class MainAgent extends Agent {
     }
 
     // Método para limitar valores a dos dígitos decimales
-    public double round(double value) {
+    public static double round(double value) {
         // Formateador para limitar a dos decimales
         DecimalFormat df = new DecimalFormat("#.##");
         return Double.parseDouble(df.format(value));
