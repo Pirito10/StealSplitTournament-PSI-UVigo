@@ -68,13 +68,13 @@ public class RandomAgent extends Agent {
                     // Si es un mensaje de nueva ronda...
                 } else if (message.startsWith("NewGame")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-
-                    // Extraemos del contenido los IDs
-                    String[] partes = message.split("#");
-                    partes = partes[1].split(",");
                     /**
                      * TODO
                      * ? ¿Sirve de algo saber contra quién juego en el agente random?
+                     * // Extraemos del contenido los IDs
+                     * String[] partes = message.split("#");
+                     * partes = partes[1].split(",");
+                     * 
                      * int player1 = Integer.parseInt(partes[0]);
                      * int player2 = Integer.parseInt(partes[0]);
                      * 
@@ -101,11 +101,56 @@ public class RandomAgent extends Agent {
                     // Si es un mensaje de resultados...
                 } else if (message.startsWith("Results")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-                    // ? ¿De que sirve saber los resultados de cada jugada en el agente random?
+                    // ? ¿De qué sirve saber los resultados de cada jugada en el agente random?
+
+                    // Si es un mensaje de fin de ronda...
+                } else if (message.startsWith("RoundOver")) {
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+
+                    // Extraemos del contenido toda la información
+                    String[] partes = message.split("#");
+                    int roundPayoff = Integer.parseInt(partes[2]);
+                    double totalPayoff = Double.parseDouble(partes[3]);
+                    double inflationRate = Double.parseDouble(partes[4]);
+                    double stocks = Double.parseDouble(partes[5]);
+                    double stockValue = Double.parseDouble(partes[6]);
+                    // ? ¿De qué sirve saber el payoff de la ronda y el valor de inflación en el
+                    // ? agente random?
+
+                    // Seleccionamos una acción aleatoriamente
+                    String action;
+                    action = new Random().nextBoolean() ? "Buy" : "Sell";
+
+                    // Seleccionamos una cantidad
+                    double amount;
+                    // Si es compra, comprobamos si podemos comprar
+                    if (action.equals("Buy")) {
+                        if (totalPayoff == 0) {
+                            amount = 0;
+                        } else {
+                            // Entre 0 y el máximo que podemos comprar con lo que tenemos
+                            amount = new Random().nextDouble(totalPayoff / stockValue);
+                        }
+                        // Si es venta, comprobamos si podemos vender
+                    } else if (stocks == 0) {
+                        amount = 0;
+                    } else {
+                        // Entre 0 y todo el stock que tenemos
+                        amount = new Random().nextDouble(stocks);
+                    }
+
+                    // Construímos el mensaje
+                    String reply = action + "#" + amount;
+
+                    // Enviamos el mensaje
+                    sendReply(ACLMessage.INFORM, msg, reply);
+
+                    System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
                 }
 
             }
         });
+
     }
 
     @Override
