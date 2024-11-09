@@ -109,8 +109,10 @@ public class RandomAgent extends Agent {
 
                     // Extraemos del contenido toda la información
                     String[] partes = message.split("#");
+                    @SuppressWarnings("unused")
                     int roundPayoff = Integer.parseInt(partes[2]);
                     double totalPayoff = Double.parseDouble(partes[3]);
+                    @SuppressWarnings("unused")
                     double inflationRate = Double.parseDouble(partes[4]);
                     double stocks = Double.parseDouble(partes[5]);
                     double stockValue = Double.parseDouble(partes[6]);
@@ -140,7 +142,7 @@ public class RandomAgent extends Agent {
                     }
 
                     // Construímos el mensaje
-                    String reply = action + "#" + amount;
+                    String reply = action + "#" + MainAgent.round(amount);
 
                     // Enviamos el mensaje
                     sendReply(ACLMessage.INFORM, msg, reply);
