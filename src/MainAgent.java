@@ -253,6 +253,28 @@ public class MainAgent extends Agent {
                         System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
                     }
                 }
+
+                System.out.println("[Main] Torneo finalizado, informando a los jugadores...");
+
+                // Recorremos la lista de jugadores
+                for (int i = 0; i < players.size(); i++) {
+                    // Obtenemos el jugador
+                    AID player = players.get(i);
+                    // Obtenemos su payoff acumulado
+                    double currentPayoff = totalPayoffs.get(player);
+                    // Obtenemos sus stocks
+                    double stocks = totalStocks.get(player);
+                    // Sumamos a su payoff el valor de venta de sus stocks, aplicando la comisión de
+                    // venta
+                    double totalPayoff = currentPayoff + ((stocks * getIndexValue(R)) * (1 - F));
+
+                    // Construímos el mensaje de fin de torneo
+                    String message = "GameOver#" + i + "#" + totalPayoff;
+
+                    // Enviamos el mensaje
+                    sendMessage(ACLMessage.REQUEST, player, message);
+                    System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
+                }
             }
         });
     }
