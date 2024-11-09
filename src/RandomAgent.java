@@ -95,12 +95,12 @@ public class RandomAgent extends Agent {
 
                     // Enviamos el mensaje
                     sendReply(ACLMessage.INFORM, msg, reply);
-
                     System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
 
                     // Si es un mensaje de resultados...
                 } else if (message.startsWith("Results")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                    // TODO
                     // ? ¿De qué sirve saber los resultados de cada jugada en el agente random?
 
                     // Si es un mensaje de fin de ronda...
@@ -116,6 +116,7 @@ public class RandomAgent extends Agent {
                     double inflationRate = Double.parseDouble(partes[4]);
                     double stocks = Double.parseDouble(partes[5]);
                     double stockValue = Double.parseDouble(partes[6]);
+                    // TODO
                     // ? ¿De qué sirve saber el payoff de la ronda y el valor de inflación en el
                     // ? agente random?
 
@@ -146,8 +147,13 @@ public class RandomAgent extends Agent {
 
                     // Enviamos el mensaje
                     sendReply(ACLMessage.INFORM, msg, reply);
-
                     System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
+
+                    // Si es un mensaje de contabilidad...
+                } else if (message.startsWith("Accounting")) {
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                    // TODO
+                    // ? ¿De qué sirve saber el payoff y los stocks en el agente random?
                 }
 
             }
