@@ -7,7 +7,7 @@
             "command": "javac",
             "args": [
                 "-classpath",
-                "lib/jade.jar",
+                "'lib/jade.jar;lib/javafx/*'",
                 "-d",
                 "bin",
                 "src/*.java"
