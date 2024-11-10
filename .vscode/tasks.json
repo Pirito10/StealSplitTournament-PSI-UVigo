@@ -29,7 +29,7 @@
                 "--add-modules",
                 "javafx.controls,javafx.fxml",
                 "-classpath",
-                "'bin;src/resources'",
+                "'lib/jade.jar;bin;src/resources'",
                 "jade.Boot",
                 "-agents",
                 "'MainAgent:MainAgent;RandomAgent1:RandomAgent;RandomAgent2:RandomAgent'"
