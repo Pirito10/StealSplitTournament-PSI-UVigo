@@ -10,13 +10,14 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import javafx.application.Application;
 
 public class MainAgent extends Agent {
 
     // Variables para almacenar el número de jugadores, de rondas y el porcentaje de
     // comisión
     private int N;
-    private final int R = 100;
+    private final int R = 1;
     private final double F = 0.1;
 
     // Lista para almacenar los AID de los jugadores
@@ -30,6 +31,15 @@ public class MainAgent extends Agent {
 
     @Override
     protected void setup() {
+
+        // Iniciar la interfaz gráfica en un nuevo hilo
+        new Thread(() -> {
+            try {
+                Application.launch(GUI.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
 
         // Pequeño delay inicial para que inicialice JADE
         try {
