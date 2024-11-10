@@ -8,14 +8,14 @@ public class GUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Carga el archivo .fxml
+            // Cargamos el fichero GUI.fxml
             Parent root = FXMLLoader.load(getClass().getResource("/GUI.fxml"));
 
-            // Crea la escena con el layout cargado
+            // Creamos la escena a partir del fichero cargado
             Scene scene = new Scene(root);
 
-            // Configura el stage
-            primaryStage.setTitle("Interfaz del Torneo");
+            // Configuramos y mostramos el stage
+            primaryStage.setTitle("PSI Tournament");
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
