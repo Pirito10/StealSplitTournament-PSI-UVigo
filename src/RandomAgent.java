@@ -157,7 +157,7 @@ public class RandomAgent extends Agent {
 
                     // Si es un mensaje de fin de torneo...
                 } else if (message.startsWith("GameOver")) {
-                    System.out.println("[Jugador ]" + ID + "] Mensaje recibido: " + message);
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
                     // TODO
                     // ? ¿De qué sirve saber que ha terminado el torneo en el agente random?
                 }
