@@ -6,8 +6,12 @@
             "type": "shell",
             "command": "javac",
             "args": [
+                "--module-path",
+                "lib/javafx/lib",
+                "--add-modules",
+                "javafx.controls",
                 "-classpath",
-                "'lib/jade.jar;lib/javafx/*'",
+                "'lib/jade.jar;lib/javafx/lib'",
                 "-d",
                 "bin",
                 "src/*.java"
@@ -20,11 +24,15 @@
             "type": "shell",
             "command": "java",
             "args": [
+                "--module-path",
+                "lib/javafx/lib",
+                "--add-modules",
+                "javafx.controls",
                 "-classpath",
                 "'lib/jade.jar;bin'",
                 "jade.Boot",
                 "-agents",
-                "'MainAgent:MainAgent;RandomAgent1:RandomAgent;RandomAgent2:RandomAgent;RandomAgent3:RandomAgent'"
+                "'MainAgent:MainAgent;RandomAgent1:RandomAgent;RandomAgent2:RandomAgent'"
             ],
             "group": "test",
             "dependsOn": "Compilar",
