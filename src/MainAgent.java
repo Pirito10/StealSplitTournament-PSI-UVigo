@@ -14,6 +14,9 @@ import javafx.application.Application;
 
 public class MainAgent extends Agent {
 
+    // Referencia al controlador
+    private Controller controller;
+
     // Variables para almacenar el número de jugadores, de rondas y el porcentaje de
     // comisión
     private int N, R;
@@ -22,7 +25,7 @@ public class MainAgent extends Agent {
     // Lista para almacenar los AID de los jugadores
     private ArrayList<AID> players = new ArrayList<>();
 
-    // Matriz con los payoffs para cada
+    // Matriz con los payoffs
     private final int[][][] matrix = {
             { { 2, 2 }, { 0, 4 } },
             { { 4, 0 }, { 0, 0 } }
@@ -37,23 +40,18 @@ public class MainAgent extends Agent {
         // Pasamos la referencia del agente principal a la interfaz
         GUI.setMainAgent(this);
 
-        // Iniciar la interfaz gráfica en un nuevo hilo
-        new Thread(() -> {
-            try {
-                Application.launch(GUI.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        // Iniciamos la interfaz gráfica en un nuevo hilo
+        new Thread(() -> Application.launch(GUI.class)).start();
 
-        // Pequeño delay inicial para que inicialice JADE
+        // Esperamos a que se inicialice la interfaz
         try {
-            Thread.sleep(100);
+            GUI.getLatch().await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         System.out.println("[Main] Se ha inicializado el agente principal");
+        controller.logMessage("[Main] Se ha inicializado el agente principal");
 
         // Esperamos a que se pulse el botón de inicio
         waitStart();
@@ -360,24 +358,17 @@ public class MainAgent extends Agent {
         return Double.parseDouble(df.format(value));
     }
 
+    // Método para recibir la referencia al controlador
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
     // Método para empezar el torneo
     public synchronized void startTournament(int R, double F) {
         // Inicializamos el número de rondas y el porcentaje de comisión
         this.R = R;
         this.F = F;
 
-        // Despertamos al hilo
-        notify();
-    }
-
-    // Método para pausar el torneo
-    public void stopTournament() {
-        stop = true;
-    }
-
-    // Método para continuar el torneo
-    public synchronized void continueTournament() {
-        stop = false;
         // Despertamos al hilo
         notify();
     }
@@ -392,6 +383,11 @@ public class MainAgent extends Agent {
         }
     }
 
+    // Método para pausar el torneo
+    public void stopTournament() {
+        stop = true;
+    }
+
     // Método para comprobar si se ha pulsado el botón de pausa
     private synchronized void checkStop() {
         // Dormimos al hilo hasta que se pulse el botón de continuar
@@ -402,5 +398,12 @@ public class MainAgent extends Agent {
                 e.printStackTrace();
             }
         }
+    }
+
+    // Método para continuar el torneo
+    public synchronized void continueTournament() {
+        stop = false;
+        // Despertamos al hilo
+        notify();
     }
 }
