@@ -29,6 +29,8 @@ public class Controller {
     private TextField feeField;
     @FXML
     private TextArea logTextArea;
+    @FXML
+    private Button clearButton;
 
     // Método para gestionar el botón de inicio
     @FXML
@@ -81,5 +83,11 @@ public class Controller {
     // Método para añadir un mensaje al área de texto de log
     public void logMessage(String message) {
         logTextArea.appendText(message + "\n");
+    }
+
+    // Método para gestionar el botón de limpiar
+    @FXML
+    private void handleClearButtonAction() {
+        logTextArea.clear();
     }
 }
