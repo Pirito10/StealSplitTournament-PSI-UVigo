@@ -20,13 +20,14 @@ public class GUI extends Application {
         try {
             // Cargamos el fichero GUI.fxml
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI.fxml"));
+            Parent root = loader.load();
 
             // Creamos el controlador para gestionar la interfaz
-            Controller controller = new Controller(mainAgent);
-            loader.setController(controller);
+            Controller controller = loader.getController();
+            // Le pasamos la referencia al agente principal
+            controller.setMainAgent(mainAgent);
 
             // Creamos la escena
-            Parent root = loader.load();
             Scene scene = new Scene(root);
 
             // Configuramos y mostramos el stage
