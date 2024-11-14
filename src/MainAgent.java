@@ -16,9 +16,8 @@ public class MainAgent extends Agent {
 
     // Variables para almacenar el número de jugadores, de rondas y el porcentaje de
     // comisión
-    private int N;
-    private final int R = 1;
-    private final double F = 0.1;
+    private int N, R;
+    private double F;
 
     // Lista para almacenar los AID de los jugadores
     private ArrayList<AID> players = new ArrayList<>();
@@ -29,13 +28,13 @@ public class MainAgent extends Agent {
             { { 4, 0 }, { 0, 0 } }
     };
 
-    // Variable para esperar a que se presione el botón de inicio
-    private volatile boolean startTournament = false;
+    // Variable de control para pausar el agente
+    private boolean stop = false;
 
     @Override
     protected void setup() {
 
-        // Pasamos la referencia del agente principal a la clase GUI
+        // Pasamos la referencia del agente principal a la interfaz
         GUI.setMainAgent(this);
 
         // Iniciar la interfaz gráfica en un nuevo hilo
@@ -49,23 +48,15 @@ public class MainAgent extends Agent {
 
         // Pequeño delay inicial para que inicialice JADE
         try {
-            Thread.sleep(150);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         System.out.println("[Main] Se ha inicializado el agente principal");
 
-        // Dormimos al hilo hasta que se presione el botón de inicio
-        synchronized (this) {
-            while (!startTournament) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        // Esperamos a que se pulse el botón de inicio
+        waitStart();
 
         // Comportamiento para buscar otros agentes
         addBehaviour(new OneShotBehaviour() {
@@ -144,6 +135,16 @@ public class MainAgent extends Agent {
 
                 // Iteramos sobre el número de rondas
                 for (int round = 1; round <= R; round++) {
+                    // ! TEMPORAL DELAY
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    // Comprobamos si se ha pulsado el botón de pausa
+                    checkStop();
+
                     System.out.println("\n[Main] Iniciando la ronda " + round + "...");
 
                     // HashMap para acumular el payoff de cada jugador durante la ronda
@@ -359,9 +360,47 @@ public class MainAgent extends Agent {
         return Double.parseDouble(df.format(value));
     }
 
-    // Método para despertar al hilo cuando se presione el botón de inicio
-    public synchronized void iniciarTorneo() {
-        startTournament = true;
+    // Método para empezar el torneo
+    public synchronized void startTournament(int R, double F) {
+        // Inicializamos el número de rondas y el porcentaje de comisión
+        this.R = R;
+        this.F = F;
+
+        // Despertamos al hilo
         notify();
+    }
+
+    // Método para pausar el torneo
+    public void stopTournament() {
+        stop = true;
+    }
+
+    // Método para continuar el torneo
+    public synchronized void continueTournament() {
+        stop = false;
+        // Despertamos al hilo
+        notify();
+    }
+
+    // Método para esperar a que se pulse el botón de inicio
+    private synchronized void waitStart() {
+        // Dormimos al hilo hasta que se pulse el botón de inicio
+        try {
+            wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Método para comprobar si se ha pulsado el botón de pausa
+    private synchronized void checkStop() {
+        // Dormimos al hilo hasta que se pulse el botón de continuar
+        if (stop) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
