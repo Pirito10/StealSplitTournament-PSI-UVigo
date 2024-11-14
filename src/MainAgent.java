@@ -29,8 +29,14 @@ public class MainAgent extends Agent {
             { { 4, 0 }, { 0, 0 } }
     };
 
+    // Variable para esperar a que se presione el botón de inicio
+    private volatile boolean startTournament = false;
+
     @Override
     protected void setup() {
+
+        // Pasamos la referencia del MainAgent a la clase GUI
+        GUI.setMainAgent(this);
 
         // Iniciar la interfaz gráfica en un nuevo hilo
         new Thread(() -> {
@@ -49,6 +55,17 @@ public class MainAgent extends Agent {
         }
 
         System.out.println("[Main] Se ha inicializado el agente principal");
+
+        // Dormimos al hilo hasta que se presione el botón de inicio
+        synchronized (this) {
+            while (!startTournament) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         // Comportamiento para buscar otros agentes
         addBehaviour(new OneShotBehaviour() {
@@ -340,5 +357,11 @@ public class MainAgent extends Agent {
         // Formateador para limitar a dos decimales
         DecimalFormat df = new DecimalFormat("#.##");
         return Double.parseDouble(df.format(value));
+    }
+
+    // Método para despertar al hilo cuando se presione el botón de inicio
+    public synchronized void iniciarTorneo() {
+        startTournament = true;
+        notify();
     }
 }
