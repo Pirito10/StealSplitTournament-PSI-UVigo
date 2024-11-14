@@ -35,7 +35,7 @@ public class MainAgent extends Agent {
     @Override
     protected void setup() {
 
-        // Pasamos la referencia del MainAgent a la clase GUI
+        // Pasamos la referencia del agente principal a la clase GUI
         GUI.setMainAgent(this);
 
         // Iniciar la interfaz gráfica en un nuevo hilo
