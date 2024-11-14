@@ -11,28 +11,29 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import javafx.application.Application;
+import javafx.application.Platform;
 
 public class MainAgent extends Agent {
 
     // Referencia al controlador
-    private Controller controller;
+    private static Controller controller;
 
     // Variables para almacenar el número de jugadores, de rondas y el porcentaje de
     // comisión
-    private int N, R;
-    private double F;
+    private static int N, R;
+    private static double F;
 
     // Lista para almacenar los AID de los jugadores
-    private ArrayList<AID> players = new ArrayList<>();
+    private static ArrayList<AID> players = new ArrayList<>();
 
     // Matriz con los payoffs
-    private final int[][][] matrix = {
+    private static final int[][][] matrix = {
             { { 2, 2 }, { 0, 4 } },
             { { 4, 0 }, { 0, 0 } }
     };
 
     // Variable de control para pausar el agente
-    private boolean stop = false;
+    private static boolean stop = false;
 
     @Override
     protected void setup() {
@@ -50,8 +51,7 @@ public class MainAgent extends Agent {
             e.printStackTrace();
         }
 
-        System.out.println("[Main] Se ha inicializado el agente principal");
-        controller.logMessage("[Main] Se ha inicializado el agente principal");
+        log("Se ha inicializado el agente principal");
 
         // Esperamos a que se pulse el botón de inicio
         waitStart();
@@ -60,7 +60,7 @@ public class MainAgent extends Agent {
         addBehaviour(new OneShotBehaviour() {
             @Override
             public void action() {
-                System.out.println("[Main] Buscando agentes jugadores...");
+                log("Buscando agentes jugadores...");
 
                 // Creamos una plantilla con el tipo de agente que queremos buscar
                 DFAgentDescription template = new DFAgentDescription();
@@ -72,21 +72,21 @@ public class MainAgent extends Agent {
                     // Buscamos los agentes que coincidan con la descripción
                     DFAgentDescription[] result = DFService.search(myAgent, template);
                     if (result.length >= 2) {
-                        System.out.println("[Main] Se han encontrado " + result.length + " jugadores:");
+                        log("Se han encontrado " + result.length + " jugadores:");
 
                         // Recorremos la lista de agentes
                         for (DFAgentDescription agentDesc : result) {
                             // Obtenemos el AID de cada agente, y lo almacenamos en la lista
                             AID agentID = agentDesc.getName();
                             players.add(agentID);
-                            System.out.println("\t- " + agentID.getLocalName());
+                            log("\t- " + agentID.getLocalName());
                         }
                         // Si hay uno o cero jugadores, no se continúa
                     } else if (result.length == 1) {
-                        System.out.println("[Main] Solo se ha encontrado un agente jugador");
+                        log("Solo se ha encontrado un agente jugador");
                         doDelete();
                     } else {
-                        System.out.println("[Main] No se han encontrado agentes jugadores");
+                        log("No se han encontrado agentes jugadores");
                         doDelete();
                     }
                 } catch (FIPAException e) {
@@ -100,7 +100,7 @@ public class MainAgent extends Agent {
         addBehaviour(new OneShotBehaviour() {
             @Override
             public void action() {
-                System.out.println("[Main] Informando a los jugadores sobre la competición...");
+                log("Informando a los jugadores sobre la competición...");
 
                 // Obtenemos el número de jugadores
                 N = players.size();
@@ -114,7 +114,7 @@ public class MainAgent extends Agent {
                     // Enviamos el mensaje
                     sendMessage(ACLMessage.INFORM, player, message);
 
-                    System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
+                    log("Mensaje enviado a jugador con ID " + i + ": " + message);
                 }
 
                 // HashMap para almacenar el payoff acumulado de cada jugador
@@ -143,7 +143,7 @@ public class MainAgent extends Agent {
                     // Comprobamos si se ha pulsado el botón de pausa
                     checkStop();
 
-                    System.out.println("\n[Main] Iniciando la ronda " + round + "...");
+                    log("\nIniciando la ronda " + round + "...");
 
                     // HashMap para acumular el payoff de cada jugador durante la ronda
                     HashMap<AID, Integer> roundPayoffs = new HashMap<>();
@@ -164,31 +164,26 @@ public class MainAgent extends Agent {
                             sendMessage(ACLMessage.INFORM, player1, message);
                             sendMessage(ACLMessage.INFORM, player2, message);
 
-                            System.out.println(
-                                    "[Main] Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
+                            log("Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
 
                             // Construímos el mensaje de solicitud de acción
                             message = "Action";
 
                             // Enviamos el mensaje al primer jugador
                             sendMessage(ACLMessage.REQUEST, player1, message);
-                            System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
+                            log("Mensaje enviado a jugador con ID " + i + ": " + message);
                             // Esperamos la respuesta
                             ACLMessage reply_player1 = blockingReceive();
-                            System.out.println(
-                                    "[Main] Mensaje recibido del jugador con ID " + i + ": "
-                                            + reply_player1.getContent());
+                            log("Mensaje recibido del jugador con ID " + i + ": " + reply_player1.getContent());
                             // Extraemos del contenido la acción seleccionada
                             String action_player1 = reply_player1.getContent().split("#")[1];
 
                             // Enviamos el mensaje al segundo jugador
                             sendMessage(ACLMessage.REQUEST, player2, message);
-                            System.out.println("[Main] Mensaje enviado a jugador con ID " + j + ": " + message);
+                            log("Mensaje enviado a jugador con ID " + j + ": " + message);
                             // Esperamos la respuesta
                             ACLMessage reply_player2 = blockingReceive();
-                            System.out.println(
-                                    "[Main] Mensaje recibido del jugador con ID " + j + ": "
-                                            + reply_player2.getContent());
+                            log("Mensaje recibido del jugador con ID " + j + ": " + reply_player2.getContent());
                             // Extraemos del contenido la acción seleccionada
                             String action_player2 = reply_player2.getContent().split("#")[1];
 
@@ -210,8 +205,7 @@ public class MainAgent extends Agent {
                             // Enviamos los mensajes
                             sendMessage(ACLMessage.INFORM, player1, message);
                             sendMessage(ACLMessage.INFORM, player2, message);
-                            System.out.println(
-                                    "[Main] Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
+                            log("Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
                         }
                     }
 
@@ -235,11 +229,10 @@ public class MainAgent extends Agent {
 
                         // Enviamos el mensaje
                         sendMessage(ACLMessage.REQUEST, player, message);
-                        System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
+                        log("Mensaje enviado a jugador con ID " + i + ": " + message);
                         // Esperamos la respuesta
                         ACLMessage reply = blockingReceive();
-                        System.out
-                                .println("[Main] Mensaje recibido del jugador con ID " + i + ": " + reply.getContent());
+                        log("Mensaje recibido del jugador con ID " + i + ": " + reply.getContent());
 
                         // Extraemos del contenido la acción y la cantidad
                         String action = reply.getContent().split("#")[0];
@@ -276,11 +269,11 @@ public class MainAgent extends Agent {
 
                         // Enviamos el mensaje
                         sendMessage(ACLMessage.INFORM, player, message);
-                        System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
+                        log("Mensaje enviado a jugador con ID " + i + ": " + message);
                     }
                 }
 
-                System.out.println("[Main] Torneo finalizado, informando a los jugadores...");
+                log("Torneo finalizado, informando a los jugadores...");
 
                 // Recorremos la lista de jugadores
                 for (int i = 0; i < players.size(); i++) {
@@ -299,7 +292,7 @@ public class MainAgent extends Agent {
 
                     // Enviamos el mensaje
                     sendMessage(ACLMessage.REQUEST, player, message);
-                    System.out.println("[Main] Mensaje enviado a jugador con ID " + i + ": " + message);
+                    log("Mensaje enviado a jugador con ID " + i + ": " + message);
                 }
             }
         });
@@ -307,7 +300,7 @@ public class MainAgent extends Agent {
 
     @Override
     protected void takeDown() {
-        System.out.println("[Main] Se ha terminado el agente principal");
+        log("Se ha terminado el agente principal");
     }
 
     // Método para enviar un mensaje a un agente
@@ -340,17 +333,18 @@ public class MainAgent extends Agent {
     }
 
     // Método que calcula el valor del stock en función de la ronda
-    public double getIndexValue(int round) {
+    private double getIndexValue(int round) {
         double indexValue = Math.log(round + 1);
         return round(indexValue);
     }
 
     // Método que calcula la tasa de inflación en función de la ronda
-    public double getInflationRate(int round) {
+    private double getInflationRate(int round) {
         double inflationRate = 0.5 + 0.5 * Math.sin(round * Math.PI / 10);
         return round(inflationRate);
     }
 
+    // TODO: hacer privado, para que los demás alumnos no dependan de mi MainAgent
     // Método para limitar valores a dos dígitos decimales
     public static double round(double value) {
         // Formateador para limitar a dos decimales
@@ -360,14 +354,14 @@ public class MainAgent extends Agent {
 
     // Método para recibir la referencia al controlador
     public void setController(Controller controller) {
-        this.controller = controller;
+        MainAgent.controller = controller;
     }
 
     // Método para empezar el torneo
     public synchronized void startTournament(int R, double F) {
         // Inicializamos el número de rondas y el porcentaje de comisión
-        this.R = R;
-        this.F = F;
+        MainAgent.R = R;
+        MainAgent.F = F;
 
         // Despertamos al hilo
         notify();
@@ -405,5 +399,14 @@ public class MainAgent extends Agent {
         stop = false;
         // Despertamos al hilo
         notify();
+    }
+
+    // Método para registrar mensajes
+    private void log(String message) {
+        // Mostramos el mensaje por consola
+        System.out.println("[Main] " + message);
+
+        // Enviamos el mensaje a la interfaz
+        Platform.runLater(() -> controller.logMessage(message));
     }
 }

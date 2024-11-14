@@ -13,8 +13,8 @@ public class Controller {
     private MainAgent mainAgent;
 
     // Método para recibir la referencia al agente principal
-    public void setMainAgent(MainAgent mainAgent) {
-        this.mainAgent = mainAgent;
+    public void setMainAgent(MainAgent agent) {
+        mainAgent = agent;
     }
 
     @FXML
@@ -28,7 +28,7 @@ public class Controller {
     @FXML
     private TextField feeField;
     @FXML
-    private static TextArea logTextArea;
+    private TextArea logTextArea;
 
     // Método para gestionar el botón de inicio
     @FXML
@@ -79,7 +79,7 @@ public class Controller {
     }
 
     // Método para añadir un mensaje al área de texto de log
-    public static void addLogMessage(String message) {
+    public void logMessage(String message) {
         logTextArea.appendText(message + "\n");
     }
 }
