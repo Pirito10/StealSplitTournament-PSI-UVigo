@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -133,6 +134,7 @@
                </VBox.margin></TextArea>
             <HBox fx:id="logButtonsBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
+                  <ToggleButton fx:id="verboseButton" mnemonicParsing="false" onAction="#handleVerboseButtonAction" selected="true" text="Logging: ON" />
                   <Button fx:id="clearButton" mnemonicParsing="false" onAction="#handleClearButtonAction" text="Clear" />
                </children>
                <VBox.margin>

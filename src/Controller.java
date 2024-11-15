@@ -2,6 +2,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 
 public class Controller {
 
@@ -29,6 +30,8 @@ public class Controller {
     private TextField feeField;
     @FXML
     private TextArea logTextArea;
+    @FXML
+    private ToggleButton verboseButton;
     @FXML
     private Button clearButton;
 
@@ -85,9 +88,27 @@ public class Controller {
         logTextArea.appendText(message + "\n");
     }
 
+    // Método para gestionar el botón de verbose
+    @FXML
+    private void handleVerboseButtonAction() {
+        // Leemos el estado del botón
+        boolean verbose = verboseButton.isSelected();
+
+        // Enviamos el estado al agente principal
+        mainAgent.setVerbose(verbose);
+
+        // Invertimos el texto del botón
+        if (verbose) {
+            verboseButton.setText("Logging: ON");
+        } else {
+            verboseButton.setText("Logging: OFF");
+        }
+    }
+
     // Método para gestionar el botón de limpiar
     @FXML
     private void handleClearButtonAction() {
+        // Eliminamos todo el contenido de área de texto
         logTextArea.clear();
     }
 }

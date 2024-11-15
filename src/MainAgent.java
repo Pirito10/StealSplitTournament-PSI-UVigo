@@ -35,6 +35,9 @@ public class MainAgent extends Agent {
     // Variable de control para pausar el agente
     private static boolean stop = false;
 
+    // Variable de control para los logs
+    private static boolean verbose = true;
+
     @Override
     protected void setup() {
 
@@ -406,7 +409,14 @@ public class MainAgent extends Agent {
         // Mostramos el mensaje por consola
         System.out.println("[Main] " + message);
 
-        // Enviamos el mensaje a la interfaz
-        Platform.runLater(() -> controller.logMessage(message));
+        // Si los logs están habilitados, enviamos el mensaje a la interfaz
+        if (verbose) {
+            Platform.runLater(() -> controller.logMessage(message));
+        }
+    }
+
+    // Método para invertir el valor de los logs
+    public void setVerbose(boolean verbose) {
+        MainAgent.verbose = verbose;
     }
 }
