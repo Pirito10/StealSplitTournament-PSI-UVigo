@@ -33,6 +33,8 @@ public class Controller {
     @FXML
     private ToggleButton verboseButton;
     @FXML
+    private ToggleButton delayButton;
+    @FXML
     private Button clearButton;
 
     // Método para gestionar el botón de inicio
@@ -102,6 +104,23 @@ public class Controller {
             verboseButton.setText("Logging: ON");
         } else {
             verboseButton.setText("Logging: OFF");
+        }
+    }
+
+    // Método para gestionar el botón de delay
+    @FXML
+    private void handleDelayButtonAction() {
+        // Leemos el estado del botón
+        boolean delay = delayButton.isSelected();
+
+        // Enviamos el estado al agente principal
+        mainAgent.setDelay(delay);
+
+        // Invertimos el texto del botón
+        if (delay) {
+            delayButton.setText("Delay: ON");
+        } else {
+            delayButton.setText("Delay: OFF");
         }
     }
 

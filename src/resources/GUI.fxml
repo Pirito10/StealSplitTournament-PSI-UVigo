@@ -82,7 +82,7 @@
                         </Text>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="D" GridPane.rowIndex="2">
                            <font>
-                              <Font size="20.0" />
+                              <Font name="System Bold" size="20.0" />
                            </font>
                         </Text>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="4,0" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -132,9 +132,14 @@
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </VBox.margin></TextArea>
-            <HBox fx:id="logButtonsBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+            <HBox fx:id="logButtonsBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                <children>
                   <ToggleButton fx:id="verboseButton" mnemonicParsing="false" onAction="#handleVerboseButtonAction" selected="true" text="Logging: ON" />
+                  <ToggleButton fx:id="delayButton" mnemonicParsing="false" onAction="#handleDelayButtonAction" selected="true" text="Delay: ON">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </ToggleButton>
                   <Button fx:id="clearButton" mnemonicParsing="false" onAction="#handleClearButtonAction" text="Clear" />
                </children>
                <VBox.margin>

@@ -35,8 +35,11 @@ public class MainAgent extends Agent {
     // Variable de control para pausar el agente
     private static boolean stop = false;
 
-    // Variable de control para los logs
+    // Variable de control para el envío de los logs
     private static boolean verbose = true;
+
+    // Variable de control para el delay
+    private static boolean delay = true;
 
     @Override
     protected void setup() {
@@ -415,8 +418,13 @@ public class MainAgent extends Agent {
         }
     }
 
-    // Método para invertir el valor de los logs
+    // Método para invertir el valor de envío de los logs
     public void setVerbose(boolean verbose) {
         MainAgent.verbose = verbose;
+    }
+
+    // Método para invertir el valor de delay
+    public void setDelay(boolean delay) {
+        MainAgent.delay = delay;
     }
 }
