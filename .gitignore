@@ -25,3 +25,6 @@ replay_pid*
 # Archivos generados por JADE
 APDescription.txt
 MTPs-Main-Container.txt
+
+# Directorio de compilación
+bin
