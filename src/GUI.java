@@ -35,6 +35,7 @@ public class GUI extends Application {
             // Configuramos y mostramos el stage
             primaryStage.setTitle("PSI Tournament");
             primaryStage.setScene(scene);
+            primaryStage.setMaximized(true);
             primaryStage.show();
 
             // Liberamos el latch para marcar que se ha cargado la interfaz
