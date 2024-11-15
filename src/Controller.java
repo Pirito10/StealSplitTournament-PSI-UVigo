@@ -29,6 +29,8 @@ public class Controller {
     @FXML
     private TextField feeField;
     @FXML
+    private Button resetButton;
+    @FXML
     private TextArea logTextArea;
     @FXML
     private ToggleButton verboseButton;
@@ -83,6 +85,12 @@ public class Controller {
 
         // Habilitamos el botón de pausa
         stopButton.setDisable(false);
+    }
+
+    // Método para gestionar el botón de reinicio de estadísticas
+    @FXML
+    private void handleResetButtonAction() {
+        // TODO
     }
 
     // Método para añadir un mensaje al área de texto de log
