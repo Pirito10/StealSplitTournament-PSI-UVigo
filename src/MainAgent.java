@@ -344,7 +344,6 @@ public class MainAgent extends Agent {
         return round(inflationRate);
     }
 
-    // TODO: hacer privado, para que los demás alumnos no dependan de mi MainAgent
     // Método para limitar valores a dos dígitos decimales
     public static double round(double value) {
         // Formateador para limitar a dos decimales

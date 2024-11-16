@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Random;
 
 import jade.core.Agent;
@@ -142,8 +143,11 @@ public class RandomAgent extends Agent {
                         amount = new Random().nextDouble(stocks);
                     }
 
+                    // Redondeamos la cantidad a dos dígitos decimales
+                    amount = Double.parseDouble((new DecimalFormat("#.##")).format(amount));
+
                     // Construímos el mensaje
-                    String reply = action + "#" + MainAgent.round(amount);
+                    String reply = action + "#" + amount;
 
                     // Enviamos el mensaje
                     sendReply(ACLMessage.INFORM, msg, reply);
