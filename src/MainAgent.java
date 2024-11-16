@@ -70,7 +70,7 @@ public class MainAgent extends Agent {
                 // Creamos una plantilla con el tipo de agente que queremos buscar
                 DFAgentDescription template = new DFAgentDescription();
                 ServiceDescription sd = new ServiceDescription();
-                sd.setType("player"); // Tipo de servicio buscado
+                sd.setType("RandomAgent"); // Tipo de servicio buscado
                 template.addServices(sd);
 
                 try {

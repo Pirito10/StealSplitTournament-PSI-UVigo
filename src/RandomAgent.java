@@ -33,7 +33,7 @@ public class RandomAgent extends Agent {
         dfd.setName(getAID()); // AID = Agent ID
         ServiceDescription sd = new ServiceDescription();
         sd.setName(getLocalName()); // Nombre del servicio
-        sd.setType("player"); // Tipo de servicio
+        sd.setType("RandomAgent"); // Tipo de servicio
         dfd.addServices(sd);
 
         // Registramos el agente en el DF (Directory Facilitator)
