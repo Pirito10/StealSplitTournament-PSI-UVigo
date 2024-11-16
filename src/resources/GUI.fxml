@@ -130,14 +130,14 @@
       </VBox>
       <VBox fx:id="columnMiddle" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
          <children>
-            <TableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <TableView fx:id="playersTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
               <columns>
                   <TableColumn fx:id="nameColumn" prefWidth="75.0" text="N" />
                 <TableColumn fx:id="typeColumn" prefWidth="75.0" text="T" />
                 <TableColumn fx:id="winsColumn" prefWidth="75.0" text="W" />
                   <TableColumn fx:id="tiesColumn" prefWidth="75.0" text="T" />
-                  <TableColumn fx:id="defeatsColumn" prefWidth="75.0" text="D" />
-                  <TableColumn fx:id="payoffColumn" prefWidth="75.0" text="P" />
+                  <TableColumn fx:id="lossesColumn" prefWidth="75.0" text="L" />
+                  <TableColumn fx:id="moneyColumn" prefWidth="75.0" text="P" />
                   <TableColumn fx:id="stocksColumn" prefWidth="75.0" text="S" />
               </columns>
                <VBox.margin>
