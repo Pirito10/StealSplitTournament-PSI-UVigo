@@ -143,7 +143,12 @@ public class Controller {
     // Método para gestionar el botón de reinicio de estadísticas
     @FXML
     private void handleResetButtonAction() {
-        // TODO
+        // Reiniciamos las estadísticas de todos los jugadores
+        for (Player player : players) {
+            player.resetStats();
+        }
+        // Actualizamos la tabla de los jugadores
+        updatePlayersTable();
     }
 
     // Método para añadir un mensaje al área de texto de log
