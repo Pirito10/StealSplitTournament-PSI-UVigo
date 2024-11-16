@@ -1,8 +1,15 @@
+import java.util.ArrayList;
+
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class Controller {
 
@@ -10,14 +17,7 @@ public class Controller {
     public Controller() {
     }
 
-    // Referencia al agente principal
-    private MainAgent mainAgent;
-
-    // Método para recibir la referencia al agente principal
-    public void setMainAgent(MainAgent agent) {
-        mainAgent = agent;
-    }
-
+    // Identificadores de elementos de la interfaz
     @FXML
     private Button startButton;
     @FXML
@@ -29,6 +29,22 @@ public class Controller {
     @FXML
     private TextField feeField;
     @FXML
+    private TableView<Player> playersTable;
+    @FXML
+    private TableColumn<Player, String> nameColumn;
+    @FXML
+    private TableColumn<Player, String> typeColumn;
+    @FXML
+    private TableColumn<Player, Integer> winsColumn;
+    @FXML
+    private TableColumn<Player, Integer> tiesColumn;
+    @FXML
+    private TableColumn<Player, Integer> lossesColumn;
+    @FXML
+    private TableColumn<Player, Double> moneyColumn;
+    @FXML
+    private TableColumn<Player, Double> stocksColumn;
+    @FXML
     private Button resetButton;
     @FXML
     private TextArea logTextArea;
@@ -38,6 +54,29 @@ public class Controller {
     private ToggleButton delayButton;
     @FXML
     private Button clearButton;
+
+    // Lista para almacenar los jugadores
+    private static ArrayList<Player> players = new ArrayList<>();
+
+    // Referencia al agente principal
+    private MainAgent mainAgent;
+
+    // Método para recibir la referencia al agente principal
+    public void setMainAgent(MainAgent agent) {
+        mainAgent = agent;
+    }
+
+    // Inicializamos la tabla de los jugadores
+    @FXML
+    public void initialize() {
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        winsColumn.setCellValueFactory(new PropertyValueFactory<>("wins"));
+        tiesColumn.setCellValueFactory(new PropertyValueFactory<>("ties"));
+        lossesColumn.setCellValueFactory(new PropertyValueFactory<>("losses"));
+        moneyColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
+        stocksColumn.setCellValueFactory(new PropertyValueFactory<>("stocks"));
+    }
 
     // Método para gestionar el botón de inicio
     @FXML
@@ -85,6 +124,19 @@ public class Controller {
 
         // Habilitamos el botón de pausa
         stopButton.setDisable(false);
+    }
+
+    // Método para agregar jugadores a la tabla de jugadores
+    public void addPlayer(Player player) {
+        // Añadimos el jugador a la lista
+        players.add(player);
+        // Añadimos el jugador a la tabla
+        playersTable.setItems(FXCollections.observableArrayList(players));
+    }
+
+    // Método para actualizar la tabla de los jugadores
+    public void updatePlayersTable() {
+        playersTable.refresh();
     }
 
     // Método para gestionar el botón de reinicio de estadísticas
