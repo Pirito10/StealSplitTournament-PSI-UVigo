@@ -50,9 +50,11 @@ public class Controller {
     @FXML
     private ToggleButton verboseButton;
     @FXML
-    private ToggleButton delayButton;
-    @FXML
     private Button clearButton;
+    @FXML
+    private TextField delayField;
+    @FXML
+    private Button delayButton;
 
     // Lista para almacenar los jugadores
     private static ArrayList<Player> players = new ArrayList<>();
@@ -173,27 +175,26 @@ public class Controller {
         }
     }
 
-    // Método para gestionar el botón de delay
-    @FXML
-    private void handleDelayButtonAction() {
-        // Leemos el estado del botón
-        boolean delay = delayButton.isSelected();
-
-        // Enviamos el estado al agente principal
-        mainAgent.setDelay(delay);
-
-        // Invertimos el texto del botón
-        if (delay) {
-            delayButton.setText("Delay: ON");
-        } else {
-            delayButton.setText("Delay: OFF");
-        }
-    }
-
     // Método para gestionar el botón de limpiar
     @FXML
     private void handleClearButtonAction() {
         // Eliminamos todo el contenido de área de texto
         logTextArea.clear();
+    }
+
+    // Método para gestionar el botón de delay
+    @FXML
+    private void handleDelayButtonAction() {
+        try {
+            // Obtenemos la cantidad de delay en milisegundos
+            int delay = Integer.parseInt(delayField.getText());
+
+            // Establecemos el nuevo valor de delay
+            if (delay >= 0) {
+                mainAgent.setDelay(delay);
+            }
+        } catch (NumberFormatException e) {
+            // Ignoramos el valor si no es correcto
+        }
     }
 }
