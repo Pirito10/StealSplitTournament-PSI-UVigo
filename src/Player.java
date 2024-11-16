@@ -86,10 +86,6 @@ public class Player {
         this.losses++;
     }
 
-    public void setMoney(double money) {
-        this.money = MainAgent.round(money);
-    }
-
     public void addMoney(double amount) {
         this.money = MainAgent.round(this.money + amount);
     }
@@ -104,10 +100,6 @@ public class Player {
 
     public void addRoundMoney(int amount) {
         this.roundMoney += amount;
-    }
-
-    public void setStocks(double stocks) {
-        this.stocks = MainAgent.round(stocks);
     }
 
     public void addStocks(double amount) {
