@@ -132,13 +132,13 @@
          <children>
             <TableView fx:id="playersTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
               <columns>
-                  <TableColumn fx:id="nameColumn" prefWidth="75.0" text="N" />
-                <TableColumn fx:id="typeColumn" prefWidth="75.0" text="T" />
-                <TableColumn fx:id="winsColumn" prefWidth="75.0" text="W" />
-                  <TableColumn fx:id="tiesColumn" prefWidth="75.0" text="T" />
-                  <TableColumn fx:id="lossesColumn" prefWidth="75.0" text="L" />
-                  <TableColumn fx:id="moneyColumn" prefWidth="75.0" text="P" />
-                  <TableColumn fx:id="stocksColumn" prefWidth="75.0" text="S" />
+                  <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Name" />
+                <TableColumn fx:id="typeColumn" prefWidth="75.0" text="Type" />
+                <TableColumn fx:id="winsColumn" prefWidth="75.0" text="Wins" />
+                  <TableColumn fx:id="tiesColumn" prefWidth="75.0" text="Ties" />
+                  <TableColumn fx:id="lossesColumn" prefWidth="75.0" text="Losses" />
+                  <TableColumn fx:id="moneyColumn" prefWidth="75.0" text="Money" />
+                  <TableColumn fx:id="stocksColumn" prefWidth="75.0" text="Stocks" />
               </columns>
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
