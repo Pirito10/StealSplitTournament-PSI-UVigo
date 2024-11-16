@@ -1,6 +1,5 @@
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -84,6 +83,7 @@ public class MainAgent extends Agent {
                         for (DFAgentDescription agentDesc : result) {
                             // Obtenemos el AID de cada agente, creamos un nuevo jugador y lo almacenamos en
                             // la lista
+                            // TODO: intentar obtener el tipo de agente
                             AID agentID = agentDesc.getName();
                             String agentName = agentID.getLocalName();
                             players.add(new Player(agentID, agentName, "RandomAgent"));
@@ -190,6 +190,18 @@ public class MainAgent extends Agent {
                             // Actualizamos el payoff acumulado de cada jugador
                             player1.addMoney(payoffs[0]);
                             player2.addMoney(payoffs[1]);
+
+                            // Actualizamos las estadísticas de cada jugador
+                            if (payoffs[0] > payoffs[1]) {
+                                player1.addWin();
+                                player2.addLoss();
+                            } else if (payoffs[0] < payoffs[1]) {
+                                player1.addLoss();
+                                player2.addWin();
+                            } else {
+                                player1.addTie();
+                                player2.addTie();
+                            }
 
                             // Construímos el mensaje de resultados
                             message = "Results#" + i + "," + j + "#" + action_player1 + "," + action_player2 + "#"
