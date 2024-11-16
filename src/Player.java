@@ -109,4 +109,13 @@ public class Player {
     public void removeStocks(double amount) {
         this.stocks = MainAgent.round(this.stocks - amount);
     }
+
+    // Método para reniciar las estadísticas del jugador
+    public void resetStats() {
+        this.wins = 0;
+        this.ties = 0;
+        this.losses = 0;
+        this.money = 0.0;
+        this.stocks = 0.0;
+    }
 }
