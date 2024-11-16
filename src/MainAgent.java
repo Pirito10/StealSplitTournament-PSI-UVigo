@@ -23,8 +23,8 @@ public class MainAgent extends Agent {
     private static int N, R;
     private static double F;
 
-    // Lista para almacenar los AID de los jugadores
-    private static ArrayList<AID> players = new ArrayList<>();
+    // Lista para almacenar los jugadores
+    private static ArrayList<Player> players = new ArrayList<>();
 
     // Matriz con los payoffs
     private static final int[][][] matrix = {
@@ -82,10 +82,12 @@ public class MainAgent extends Agent {
 
                         // Recorremos la lista de agentes
                         for (DFAgentDescription agentDesc : result) {
-                            // Obtenemos el AID de cada agente, y lo almacenamos en la lista
+                            // Obtenemos el AID de cada agente, creamos un nuevo jugador y lo almacenamos en
+                            // la lista
                             AID agentID = agentDesc.getName();
-                            players.add(agentID);
-                            log("\t- " + agentID.getLocalName());
+                            String agentName = agentID.getLocalName();
+                            players.add(new Player(agentID, agentName, "RandomAgent"));
+                            log("\t- " + agentName);
                         }
                         // Si hay uno o cero jugadores, no se continúa
                     } else if (result.length == 1) {
@@ -113,28 +115,15 @@ public class MainAgent extends Agent {
 
                 // Recorremos la lista de jugadores
                 for (int i = 0; i < players.size(); i++) {
-                    // Obtenemos el AID del jugador, y construímos su mensaje
-                    AID player = players.get(i);
+                    // Obtenemos el jugador, le asignamos un ID y construímos su mensaje
+                    Player player = players.get(i);
+                    player.setID(i);
                     String message = "Id#" + i + "#" + N + "," + R + "," + F;
 
                     // Enviamos el mensaje
-                    sendMessage(ACLMessage.INFORM, player, message);
+                    sendMessage(ACLMessage.INFORM, player.getAID(), message);
 
                     log("Mensaje enviado a jugador con ID " + i + ": " + message);
-                }
-
-                // HashMap para almacenar el payoff acumulado de cada jugador
-                HashMap<AID, Double> totalPayoffs = new HashMap<>();
-                // Inicializamos el HashMap a cero
-                for (AID player : players) {
-                    totalPayoffs.put(player, 0.0);
-                }
-
-                // HashMap para almacenar los stocks de cada jugador
-                HashMap<AID, Double> totalStocks = new HashMap<>();
-                // Inicializamos el HashMap a cero
-                for (AID player : players) {
-                    totalStocks.put(player, 0.0);
                 }
 
                 // Iteramos sobre el número de rondas
@@ -151,24 +140,22 @@ public class MainAgent extends Agent {
 
                     log("\nIniciando la ronda " + round + "...");
 
-                    // HashMap para acumular el payoff de cada jugador durante la ronda
-                    HashMap<AID, Integer> roundPayoffs = new HashMap<>();
-                    // Inicializamos el HashMap a cero
-                    for (AID player : players) {
-                        roundPayoffs.put(player, 0);
+                    // Reiniciamos el payoff de la ronda de cada jugador
+                    for (Player player : players) {
+                        player.setRoundMoney(0);
                     }
 
                     // Iteramos sobre cada pareja de jugadores
                     for (int i = 0; i < players.size() - 1; i++) {
                         for (int j = i + 1; j < players.size(); j++) {
-                            // Obtenemos los AID de los jugadores, y construímos su mensaje
-                            AID player1 = players.get(i);
-                            AID player2 = players.get(j);
+                            // Obtenemos los jugadores, y construímos su mensaje
+                            Player player1 = players.get(i);
+                            Player player2 = players.get(j);
                             String message = "NewGame#" + i + "#" + j;
 
                             // Enviamos los mensajes
-                            sendMessage(ACLMessage.INFORM, player1, message);
-                            sendMessage(ACLMessage.INFORM, player2, message);
+                            sendMessage(ACLMessage.INFORM, player1.getAID(), message);
+                            sendMessage(ACLMessage.INFORM, player2.getAID(), message);
 
                             log("Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
 
@@ -176,7 +163,7 @@ public class MainAgent extends Agent {
                             message = "Action";
 
                             // Enviamos el mensaje al primer jugador
-                            sendMessage(ACLMessage.REQUEST, player1, message);
+                            sendMessage(ACLMessage.REQUEST, player1.getAID(), message);
                             log("Mensaje enviado a jugador con ID " + i + ": " + message);
                             // Esperamos la respuesta
                             ACLMessage reply_player1 = blockingReceive();
@@ -185,7 +172,7 @@ public class MainAgent extends Agent {
                             String action_player1 = reply_player1.getContent().split("#")[1];
 
                             // Enviamos el mensaje al segundo jugador
-                            sendMessage(ACLMessage.REQUEST, player2, message);
+                            sendMessage(ACLMessage.REQUEST, player2.getAID(), message);
                             log("Mensaje enviado a jugador con ID " + j + ": " + message);
                             // Esperamos la respuesta
                             ACLMessage reply_player2 = blockingReceive();
@@ -197,20 +184,20 @@ public class MainAgent extends Agent {
                             int[] payoffs = getPayoffs(action_player1, action_player2);
 
                             // Actualizamos el payoff de la ronda de cada jugador
-                            roundPayoffs.put(player1, roundPayoffs.get(player1) + payoffs[0]);
-                            roundPayoffs.put(player2, roundPayoffs.get(player2) + payoffs[1]);
+                            player1.addRoundMoney(payoffs[0]);
+                            player2.addRoundMoney(payoffs[1]);
 
                             // Actualizamos el payoff acumulado de cada jugador
-                            totalPayoffs.put(player1, totalPayoffs.get(player1) + payoffs[0]);
-                            totalPayoffs.put(player2, totalPayoffs.get(player2) + payoffs[1]);
+                            player1.addMoney(payoffs[0]);
+                            player2.addMoney(payoffs[1]);
 
                             // Construímos el mensaje de resultados
                             message = "Results#" + i + "," + j + "#" + action_player1 + "," + action_player2 + "#"
                                     + payoffs[0] + "," + payoffs[1];
 
                             // Enviamos los mensajes
-                            sendMessage(ACLMessage.INFORM, player1, message);
-                            sendMessage(ACLMessage.INFORM, player2, message);
+                            sendMessage(ACLMessage.INFORM, player1.getAID(), message);
+                            sendMessage(ACLMessage.INFORM, player2.getAID(), message);
                             log("Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
                         }
                     }
@@ -219,22 +206,18 @@ public class MainAgent extends Agent {
                     for (int i = 0; i < players.size(); i++) {
 
                         // Obtenemos el jugador
-                        AID player = players.get(i);
-                        // Obtenemos su payoff de la ronda
-                        int roundPayoff = roundPayoffs.get(player);
-                        // Obtenemos su payoff acumulado y le aplicamos el índice de inflación
-                        double totalPayoff = round(totalPayoffs.get(player) * (1 - getInflationRate(round)));
-                        totalPayoffs.put(player, totalPayoff);
-                        // Obtenemos sus stocks
-                        double stocks = totalStocks.get(player);
+                        Player player = players.get(i);
+
+                        // Aplicamos el índice de inflación a su payoff acumulado
+                        player.removeMoney(player.getMoney() * (1 - getInflationRate(round)));
 
                         // Construímos el mensaje de fin de ronda
-                        String message = "RoundOver#" + i + "#" + roundPayoff + "#" + totalPayoff + "#"
+                        String message = "RoundOver#" + i + "#" + player.getRoundMoney() + "#" + player.getMoney() + "#"
                                 + getInflationRate(round)
-                                + "#" + stocks + "#" + getIndexValue(round);
+                                + "#" + player.getStocks() + "#" + getIndexValue(round);
 
                         // Enviamos el mensaje
-                        sendMessage(ACLMessage.REQUEST, player, message);
+                        sendMessage(ACLMessage.REQUEST, player.getAID(), message);
                         log("Mensaje enviado a jugador con ID " + i + ": " + message);
                         // Esperamos la respuesta
                         ACLMessage reply = blockingReceive();
@@ -247,57 +230,50 @@ public class MainAgent extends Agent {
                         // Si la acción es comprar...
                         if (action.equals("Buy")) {
                             // Comprobamos si se puede realizar la compra
-                            if (amount * getIndexValue(round) <= totalPayoffs.get(player)) {
+                            if (amount * getIndexValue(round) <= player.getMoney()) {
                                 // Quitamos del payoff la cantidad gastada
-                                double newPayoff = round(totalPayoffs.get(player) - (amount * getIndexValue(round)));
-                                totalPayoffs.put(player, newPayoff);
+                                player.removeMoney(amount * getIndexValue(round));
                                 // Añadimos los stocks comprados
-                                double newStocks = round(totalStocks.get(player) + amount);
-                                totalStocks.put(player, newStocks);
+                                player.addStocks(amount);
                             }
                             // Si la acción es vender...
                         } else {
                             // Comprobamos si se puede realizar la venta
-                            if (amount <= totalStocks.get(player)) {
+                            if (amount <= player.getStocks()) {
                                 // Quitamos los stocks vendidos
-                                double newStocks = round(totalStocks.get(player) - amount);
-                                totalStocks.put(player, newStocks);
+                                player.removeStocks(amount);
                                 // Añadimos el payoff obtenido, aplicando la comisión de venta
-                                double newPayoff = round(totalPayoffs.get(player)
-                                        + ((amount * getIndexValue(round)) * (1 - F)));
-                                totalPayoffs.put(player, newPayoff);
+                                player.addMoney((amount * getIndexValue(round)) * (1 - F));
                             }
                         }
 
                         // Construímos el mensaje de contabilidad
-                        message = "Accounting#" + i + "#" + totalPayoffs.get(player) + "#"
-                                + totalStocks.get(player);
+                        message = "Accounting#" + i + "#" + player.getMoney() + "#"
+                                + player.getStocks();
 
                         // Enviamos el mensaje
-                        sendMessage(ACLMessage.INFORM, player, message);
+                        sendMessage(ACLMessage.INFORM, player.getAID(), message);
                         log("Mensaje enviado a jugador con ID " + i + ": " + message);
                     }
                 }
 
-                log("Torneo finalizado, informando a los jugadores...");
+                log("\nTorneo finalizado, informando a los jugadores...");
 
                 // Recorremos la lista de jugadores
                 for (int i = 0; i < players.size(); i++) {
+
                     // Obtenemos el jugador
-                    AID player = players.get(i);
-                    // Obtenemos su payoff acumulado
-                    double currentPayoff = totalPayoffs.get(player);
-                    // Obtenemos sus stocks
-                    double stocks = totalStocks.get(player);
-                    // Sumamos a su payoff el valor de venta de sus stocks, aplicando la comisión de
-                    // venta
-                    double totalPayoff = currentPayoff + ((stocks * getIndexValue(R)) * (1 - F));
+                    Player player = players.get(i);
+
+                    // Sumamos a su payoff acumulado el valor de venta de sus stocks, aplicando la
+                    // comisión de venta
+                    player.addMoney((player.getStocks() * getIndexValue(R)) * (1 - F));
 
                     // Construímos el mensaje de fin de torneo
-                    String message = "GameOver#" + i + "#" + totalPayoff;
+                    String message = "GameOver#" + i + "#" + player.getMoney();
 
                     // Enviamos el mensaje
-                    sendMessage(ACLMessage.REQUEST, player, message);
+                    sendMessage(ACLMessage.REQUEST, player.getAID(), message);
                     log("Mensaje enviado a jugador con ID " + i + ": " + message);
                 }
             }
