@@ -81,12 +81,16 @@ public class MainAgent extends Agent {
 
                         // Recorremos la lista de agentes
                         for (DFAgentDescription agentDesc : result) {
-                            // Obtenemos el AID de cada agente, creamos un nuevo jugador y lo almacenamos en
-                            // la lista
+                            // Obtenemos el AID de cada agente y su nombre
                             // TODO: intentar obtener el tipo de agente
                             AID agentID = agentDesc.getName();
                             String agentName = agentID.getLocalName();
-                            players.add(new Player(agentID, agentName, "RandomAgent"));
+                            // Creamos un nuevo jugador
+                            Player player = new Player(agentID, agentName, "RandomAgent");
+                            // Lo almacenamos en la lista de jugadores y lo añadimos a la tabla de los
+                            // jugadores
+                            players.add(player);
+                            addPlayerToTable(player);
                             log("\t- " + agentName);
                         }
                         // Si hay uno o cero jugadores, no se continúa
@@ -130,7 +134,7 @@ public class MainAgent extends Agent {
                 for (int round = 1; round <= R; round++) {
                     // ! TEMPORAL DELAY
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -211,6 +215,9 @@ public class MainAgent extends Agent {
                             sendMessage(ACLMessage.INFORM, player1.getAID(), message);
                             sendMessage(ACLMessage.INFORM, player2.getAID(), message);
                             log("Mensaje enviado a jugadores con ID " + i + "," + j + ": " + message);
+
+                            // Actualizamos la tabla de los jugadores
+                            updatePlayersTable();
                         }
                     }
 
@@ -266,6 +273,9 @@ public class MainAgent extends Agent {
                         // Enviamos el mensaje
                         sendMessage(ACLMessage.INFORM, player.getAID(), message);
                         log("Mensaje enviado a jugador con ID " + i + ": " + message);
+
+                        // Actualizamos la tabla de los jugadores
+                        updatePlayersTable();
                     }
                 }
 
@@ -287,6 +297,9 @@ public class MainAgent extends Agent {
                     // Enviamos el mensaje
                     sendMessage(ACLMessage.REQUEST, player.getAID(), message);
                     log("Mensaje enviado a jugador con ID " + i + ": " + message);
+
+                    // Actualizamos la tabla de los jugadores
+                    updatePlayersTable();
                 }
             }
         });
@@ -347,7 +360,7 @@ public class MainAgent extends Agent {
     }
 
     // Método para recibir la referencia al controlador
-    public void setController(Controller controller) {
+    public static void setController(Controller controller) {
         MainAgent.controller = controller;
     }
 
@@ -395,8 +408,22 @@ public class MainAgent extends Agent {
         notify();
     }
 
+    // Método para añadir un jugador a la tabla de los jugadores
+    public static void addPlayerToTable(Player player) {
+        Platform.runLater(() -> {
+            controller.addPlayer(player);
+        });
+    }
+
+    // Método para actualizar la tabla de los jugadores
+    public static void updatePlayersTable() {
+        Platform.runLater(() -> {
+            controller.updatePlayersTable();
+        });
+    }
+
     // Método para registrar mensajes
-    private void log(String message) {
+    private static void log(String message) {
         // Mostramos el mensaje por consola
         System.out.println("[Main] " + message);
 

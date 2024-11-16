@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -132,6 +131,8 @@ public class Controller {
         players.add(player);
         // Añadimos el jugador a la tabla
         playersTable.setItems(FXCollections.observableArrayList(players));
+        // Actualizamos la tabla de los jugadores
+        updatePlayersTable();
     }
 
     // Método para actualizar la tabla de los jugadores
