@@ -360,7 +360,7 @@ public class MainAgent extends Agent {
     }
 
     // Método para recibir la referencia al controlador
-    public static void setController(Controller controller) {
+    public void setController(Controller controller) {
         MainAgent.controller = controller;
     }
 
