@@ -87,15 +87,15 @@ public class Player {
     }
 
     public void setMoney(double money) {
-        this.money = money;
+        this.money = MainAgent.round(money);
     }
 
     public void addMoney(double amount) {
-        this.money += amount;
+        this.money = MainAgent.round(this.money + amount);
     }
 
     public void removeMoney(double amount) {
-        this.money -= amount;
+        this.money = MainAgent.round(this.money - amount);
     }
 
     public void setRoundMoney(int money) {
@@ -107,14 +107,14 @@ public class Player {
     }
 
     public void setStocks(double stocks) {
-        this.stocks = stocks;
+        this.stocks = MainAgent.round(stocks);
     }
 
     public void addStocks(double amount) {
-        this.stocks += amount;
+        this.stocks = MainAgent.round(this.stocks + amount);
     }
 
     public void removeStocks(double amount) {
-        this.stocks -= amount;
+        this.stocks = MainAgent.round(this.stocks - amount);
     }
 }
