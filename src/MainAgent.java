@@ -37,8 +37,8 @@ public class MainAgent extends Agent {
     // Variable de control para el envío de los logs
     private static boolean verbose = true;
 
-    // Variable de control para el delay
-    private static boolean delay = true;
+    // Variable de control para el retardo
+    private static int delay = 0;
 
     @Override
     protected void setup() {
@@ -132,13 +132,6 @@ public class MainAgent extends Agent {
 
                 // Iteramos sobre el número de rondas
                 for (int round = 1; round <= R; round++) {
-                    // ! TEMPORAL DELAY
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
                     // Comprobamos si se ha pulsado el botón de pausa
                     checkStop();
 
@@ -431,6 +424,13 @@ public class MainAgent extends Agent {
         if (verbose) {
             Platform.runLater(() -> controller.logMessage(message));
         }
+
+        // Dormimos al hilo durante el tiempo especificado, en milisegundos
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     // Método para invertir el valor de envío de los logs
@@ -438,8 +438,8 @@ public class MainAgent extends Agent {
         MainAgent.verbose = verbose;
     }
 
-    // Método para invertir el valor de delay
-    public void setDelay(boolean delay) {
+    // Método para aplicar un valor de retardo
+    public void setDelay(int delay) {
         MainAgent.delay = delay;
     }
 }
