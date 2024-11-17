@@ -400,8 +400,10 @@ public class MainAgent extends Agent {
     }
 
     // Método para continuar el torneo
-    public synchronized void continueTournament() {
+    public synchronized void continueTournament(double F) {
         stop = false;
+        // Obtenemos el porcentaje de comisión
+        MainAgent.F = F;
         // Despertamos al hilo
         notify();
     }

@@ -111,6 +111,16 @@ public class Controller {
         int R = Integer.parseInt(roundsField.getText());
         double F = Double.parseDouble(feeField.getText());
 
+        // Si el número de rondas no es válido, ponemos el valor por defecto
+        if (R <= 0) {
+            R = 500;
+        }
+
+        // Si el porcentaje de comisión no es válido, ponemos el valor por defecto
+        if (F < 0 || F > 1) {
+            F = 0.01;
+        }
+
         // Iniciamos el torneo con los parámetros especificados
         mainAgent.startTournament(R, F);
 
@@ -122,7 +132,6 @@ public class Controller {
 
         // Deshabilitamos los campos de rondas y porcentaje de comisión
         roundsField.setDisable(true);
-        // TODO: allow to change fee when game is paused
         feeField.setDisable(true);
     }
 
@@ -137,19 +146,33 @@ public class Controller {
 
         // Habilitamos el botón de continuar
         continueButton.setDisable(false);
+
+        // Habilitamos el campo de porcentaje de comisión
+        feeField.setDisable(false);
     }
 
     // Método para gestionar el botón de continuar
     @FXML
     private void handleContinueButtonAction() {
+        // Leemos el valor de porcentaje de comisión
+        double F = Double.parseDouble(feeField.getText());
+
+        // Si el porcentaje de comisión no es válido, ponemos el valor por defecto
+        if (F < 0 || F > 1) {
+            F = 0.01;
+        }
+
         // Continuamos el torneo
-        mainAgent.continueTournament();
+        mainAgent.continueTournament(F);
 
         // Deshabilitamos el botón de continuar
         continueButton.setDisable(true);
 
         // Habilitamos el botón de pausa
         stopButton.setDisable(false);
+
+        // Deshabilitamos el campo de porcentaje de comisión
+        feeField.setDisable(true);
     }
 
     // Método para agregar jugadores a la tabla de jugadores
