@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -44,6 +45,8 @@ public class Controller {
     @FXML
     private TableColumn<Player, Double> stocksColumn;
     @FXML
+    private TableColumn<Player, Void> removePlayerColumn;
+    @FXML
     private Button resetButton;
     @FXML
     private TextArea logTextArea;
@@ -77,6 +80,28 @@ public class Controller {
         lossesColumn.setCellValueFactory(new PropertyValueFactory<>("losses"));
         moneyColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
         stocksColumn.setCellValueFactory(new PropertyValueFactory<>("stocks"));
+        removePlayerColumn.setCellFactory(_ -> new TableCell<>() {
+            private final Button removePlayerButton = new Button("X");
+
+            // Método que se ejecuta cada vez que se actualiza la tabla
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                // Si la celda no está vacía, configuramos el botón
+                if (!empty) {
+                    // Obtenemos el jugador correspondiente
+                    Player currentPlayer = getTableView().getItems().get(getIndex());
+
+                    // Configuramos la acción del botón
+                    removePlayerButton.setOnAction(_ -> handleRemovePlayerButtonAction(currentPlayer));
+
+                    // Ponemos el botón en la celda
+                    setGraphic(removePlayerButton);
+                } else {
+                    setGraphic(null);
+                }
+            }
+        });
     }
 
     // Método para gestionar el botón de inicio
@@ -131,15 +156,25 @@ public class Controller {
     public void addPlayer(Player player) {
         // Añadimos el jugador a la lista
         players.add(player);
-        // Añadimos el jugador a la tabla
-        playersTable.setItems(FXCollections.observableArrayList(players));
         // Actualizamos la tabla de los jugadores
         updatePlayersTable();
     }
 
     // Método para actualizar la tabla de los jugadores
     public void updatePlayersTable() {
+        // Refrescamos la lista de jugadores de la tabla
+        playersTable.setItems(FXCollections.observableArrayList(players));
         playersTable.refresh();
+    }
+
+    // Método para eliminar un jugador del torneo
+    public void handleRemovePlayerButtonAction(Player player) {
+        // Eliminamos el jugador de la lista
+        players.remove(player);
+        // Actualizamos la tabla de los jugadores
+        updatePlayersTable();
+        // Añadimos el jugador a la lista para eliminar del agente principal
+        mainAgent.playersToRemove.add(player);
     }
 
     // Método para gestionar el botón de reinicio de estadísticas
