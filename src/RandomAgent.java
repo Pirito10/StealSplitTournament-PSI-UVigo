@@ -11,10 +11,7 @@ import jade.lang.acl.ACLMessage;
 
 public class RandomAgent extends Agent {
 
-    @SuppressWarnings("unused")
-    private int ID, N, R; // Variable para almacenar el ID del agente, el número de jugadores y de rondas
-    @SuppressWarnings("unused")
-    private float F; // Variable para almacenar el porcentaje de comisión
+    private int ID; // Variable para almacenar el ID del agente
 
     @Override
     protected void setup() {
@@ -55,37 +52,16 @@ public class RandomAgent extends Agent {
 
                 // Si es un mensaje de preparación de la competición...
                 if (message.startsWith("Id")) {
-                    // Extraemos del contenido el ID y los parámetros del torneo
+                    // Extraemos del contenido el ID
                     String[] partes = message.split("#");
                     ID = Integer.parseInt(partes[1]);
-
-                    partes = partes[2].split(",");
-                    N = Integer.parseInt(partes[0]);
-                    R = Integer.parseInt(partes[1]);
-                    F = Float.parseFloat(partes[2]);
 
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Si es un mensaje de nueva ronda...
                 } else if (message.startsWith("NewGame")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-                    /**
-                     * TODO
-                     * ? ¿Sirve de algo saber contra quién juego en el agente random?
-                     * // Extraemos del contenido los IDs
-                     * String[] partes = message.split("#");
-                     * partes = partes[1].split(",");
-                     * 
-                     * int player1 = Integer.parseInt(partes[0]);
-                     * int player2 = Integer.parseInt(partes[0]);
-                     * 
-                     * 
-                     * if (player1 == ID) {
-                     * enemy = player2;
-                     * } else {
-                     * enemy = player1;
-                     * }
-                     */
+
                     // Si es un mensaje de solicitud de acción...
                 } else if (message.startsWith("Action")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
@@ -101,25 +77,16 @@ public class RandomAgent extends Agent {
                     // Si es un mensaje de resultados...
                 } else if (message.startsWith("Results")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-                    // TODO
-                    // ? ¿De qué sirve saber los resultados de cada jugada en el agente random?
 
                     // Si es un mensaje de fin de ronda...
                 } else if (message.startsWith("RoundOver")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Extraemos del contenido toda la información
+                    // Extraemos del contenido toda la información necesaria
                     String[] partes = message.split("#");
-                    @SuppressWarnings("unused")
-                    int roundPayoff = Integer.parseInt(partes[2]);
                     double totalPayoff = Double.parseDouble(partes[3]);
-                    @SuppressWarnings("unused")
-                    double inflationRate = Double.parseDouble(partes[4]);
                     double stocks = Double.parseDouble(partes[5]);
                     double stockValue = Double.parseDouble(partes[6]);
-                    // TODO
-                    // ? ¿De qué sirve saber el payoff de la ronda y el valor de inflación en el
-                    // ? agente random?
 
                     // Seleccionamos una acción aleatoriamente
                     String action;
@@ -156,14 +123,10 @@ public class RandomAgent extends Agent {
                     // Si es un mensaje de contabilidad...
                 } else if (message.startsWith("Accounting")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-                    // TODO
-                    // ? ¿De qué sirve saber el payoff y los stocks en el agente random?
 
                     // Si es un mensaje de fin de torneo...
                 } else if (message.startsWith("GameOver")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-                    // TODO
-                    // ? ¿De qué sirve saber que ha terminado el torneo en el agente random?
                 }
 
             }
