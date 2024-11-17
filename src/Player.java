@@ -6,7 +6,6 @@ public class Player {
     private final AID AID; // Identificador único de JADE
     private int ID; // Identificador asignado por el agente principal
     private String name; // Nombre del agente especificado en la ejecución del programa
-    private String type; // Tipo de agente
     private int wins; // Número de victorias
     private int ties; // Número de empates
     private int losses; // Número de derrotas
@@ -15,11 +14,10 @@ public class Player {
     private double stocks; // Cantidad de stocks
 
     // Constructor
-    public Player(AID AID, String name, String type) {
+    public Player(AID AID, String name) {
         this.AID = AID;
         this.ID = -1; // Asignado por el agente principal una vez iniciado el torneo
         this.name = name;
-        this.type = type;
         this.wins = 0;
         this.losses = 0;
         this.ties = 0;
@@ -39,10 +37,6 @@ public class Player {
 
     public String getName() {
         return name;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public int getWins() {

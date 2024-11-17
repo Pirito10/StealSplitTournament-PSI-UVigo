@@ -33,7 +33,7 @@ public class Controller {
     @FXML
     private TableColumn<Player, String> nameColumn;
     @FXML
-    private TableColumn<Player, String> typeColumn;
+    private TableColumn<Player, String> IDColumn;
     @FXML
     private TableColumn<Player, Integer> winsColumn;
     @FXML
@@ -74,7 +74,7 @@ public class Controller {
     @FXML
     public void initialize() {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        IDColumn.setCellValueFactory(new PropertyValueFactory<>("ID"));
         winsColumn.setCellValueFactory(new PropertyValueFactory<>("wins"));
         tiesColumn.setCellValueFactory(new PropertyValueFactory<>("ties"));
         lossesColumn.setCellValueFactory(new PropertyValueFactory<>("losses"));

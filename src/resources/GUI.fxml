@@ -133,7 +133,7 @@
             <TableView fx:id="playersTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
               <columns>
                   <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Name" />
-                <TableColumn fx:id="typeColumn" prefWidth="75.0" text="Type" />
+                <TableColumn fx:id="IDColumn" prefWidth="75.0" text="ID" />
                 <TableColumn fx:id="winsColumn" prefWidth="75.0" text="Wins" />
                   <TableColumn fx:id="tiesColumn" prefWidth="75.0" text="Ties" />
                   <TableColumn fx:id="lossesColumn" prefWidth="75.0" text="Losses" />

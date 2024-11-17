@@ -85,7 +85,7 @@ public class MainAgent extends Agent {
                             AID agentID = agentDesc.getName();
                             String agentName = agentID.getLocalName();
                             // Creamos un nuevo jugador
-                            Player player = new Player(agentID, agentName, "RandomAgent");
+                            Player player = new Player(agentID, agentName);
                             // Lo almacenamos en la lista de jugadores y lo añadimos a la tabla de los
                             // jugadores
                             players.add(player);
