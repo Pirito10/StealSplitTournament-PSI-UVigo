@@ -127,11 +127,10 @@ public class RandomAgent extends Agent {
                     // Si es un mensaje de fin de torneo...
                 } else if (message.startsWith("GameOver")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                    doDelete();
                 }
-
             }
         });
-
     }
 
     @Override
