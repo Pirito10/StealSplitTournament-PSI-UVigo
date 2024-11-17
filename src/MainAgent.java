@@ -443,6 +443,13 @@ public class MainAgent extends Agent {
         for (Player player : playersToRemove) {
             players.remove(player);
         }
+        // Si queda uno o cero jugadores, no se continúa
+        if (players.size() < 2) {
+            log("No quedan suficientes jugadores");
+            doDelete();
+            // TODO: eliminar todos los comportamientos antes del doDelete()
+            System.exit(-1);
+        }
         // Vaciamos la lista de jugadores para eliminar
         playersToRemove.clear();
     }
