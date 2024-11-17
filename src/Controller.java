@@ -2,6 +2,8 @@ import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -254,5 +256,20 @@ public class Controller {
         } catch (NumberFormatException e) {
             // Ignoramos el valor si no es correcto
         }
+    }
+
+    // Método para mostrar una alerta al terminal el torneo
+    public void showTournamentResults(String results) {
+        // Creamos una alerta de tipo INFORMATION
+        Alert alert = new Alert(AlertType.INFORMATION);
+        // Ponemos título a la ventana
+        alert.setTitle("Tournament results");
+        // Ponemos un encabezado
+        alert.setHeaderText("The tournament has finished");
+        // Añadimos los resultados
+        alert.setContentText(results);
+
+        // Mostramos la alerta y esperamos a que el usuario la cierre
+        alert.showAndWait();
     }
 }

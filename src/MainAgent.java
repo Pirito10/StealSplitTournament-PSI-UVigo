@@ -300,6 +300,9 @@ public class MainAgent extends Agent {
                     // Actualizamos la tabla de los jugadores
                     updatePlayersTable();
                 }
+
+                // Mostramos los resultados con una alerta
+                Platform.runLater(() -> controller.showTournamentResults(getTournamentResults()));
             }
         });
     }
@@ -480,5 +483,27 @@ public class MainAgent extends Agent {
     // Método para aplicar un valor de retardo
     public void setDelay(int delay) {
         MainAgent.delay = delay;
+    }
+
+    // Método para obtener los resultados del torneo
+    private static String getTournamentResults() {
+        StringBuilder results = new StringBuilder();
+
+        // Creamos un contador para los puestos
+        final int[] position = { 1 };
+
+        // Ordenamos a los jugadores por su dinero de mayor a menor
+        players.stream()
+                .sorted((p1, p2) -> Double.compare(p2.getMoney(), p1.getMoney()))
+                .forEachOrdered(player -> {
+                    results.append(position[0]).append(". ")
+                            .append(player.getName())
+                            .append(": ")
+                            .append(String.format("%.2f", player.getMoney()))
+                            .append("\n");
+                    position[0]++; // Incrementamos el contador
+                });
+
+        return results.toString();
     }
 }
