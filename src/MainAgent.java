@@ -71,7 +71,6 @@ public class MainAgent extends Agent {
                 // Creamos una plantilla con el tipo de agente que queremos buscar
                 DFAgentDescription template = new DFAgentDescription();
                 ServiceDescription sd = new ServiceDescription();
-                sd.setType("RandomAgent"); // Tipo de servicio buscado
                 template.addServices(sd);
 
                 try {
@@ -83,7 +82,6 @@ public class MainAgent extends Agent {
                         // Recorremos la lista de agentes
                         for (DFAgentDescription agentDesc : result) {
                             // Obtenemos el AID de cada agente y su nombre
-                            // TODO: intentar obtener el tipo de agente
                             AID agentID = agentDesc.getName();
                             String agentName = agentID.getLocalName();
                             // Creamos un nuevo jugador
