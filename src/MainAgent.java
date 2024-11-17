@@ -134,9 +134,6 @@ public class MainAgent extends Agent {
                 for (int round = 1; round <= R; round++) {
                     log("\nIniciando la ronda " + round + "...");
 
-                    // Comprobamos si se ha pulsado el botón de pausa
-                    checkStop();
-
                     // Comprobamos si se ha eliminado algún jugador
                     checkRemovedPlayers();
 
@@ -453,7 +450,7 @@ public class MainAgent extends Agent {
     }
 
     // Método para registrar mensajes
-    private static void log(String message) {
+    private void log(String message) {
         // Mostramos el mensaje por consola
         System.out.println("[Main] " + message);
 
@@ -468,6 +465,9 @@ public class MainAgent extends Agent {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        // Comprobamos si se ha pulsado el botón de pausa
+        checkStop();
     }
 
     // Método para invertir el valor de envío de los logs
