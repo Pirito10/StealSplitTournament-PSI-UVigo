@@ -39,6 +39,7 @@ public class GUI extends Application {
             // Configuramos la acción al cerrar la ventana
             primaryStage.setOnCloseRequest(_ -> {
                 // Terminamos el programa
+                System.exit(0);
                 mainAgent.exitTournament();
             });
             // Asignamos la escena a la ventana
