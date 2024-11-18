@@ -32,10 +32,18 @@ public class GUI extends Application {
             // Creamos la escena
             Scene scene = new Scene(root);
 
-            // Configuramos y mostramos el stage
+            // Configuramos el título de la ventana
             primaryStage.setTitle("PSI Tournament");
-            primaryStage.setScene(scene);
+            // Configuramos la ventana para que se abra maximizada
             primaryStage.setMaximized(true);
+            // Configuramos la acción al cerrar la ventana
+            primaryStage.setOnCloseRequest(_ -> {
+                // Terminamos el programa
+                mainAgent.exitTournament();
+            });
+            // Asignamos la escena a la ventana
+            primaryStage.setScene(scene);
+            // Mostramos la ventana
             primaryStage.show();
 
             // Liberamos el latch para marcar que se ha cargado la interfaz
