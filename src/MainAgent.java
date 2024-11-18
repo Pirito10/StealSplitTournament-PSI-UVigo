@@ -466,7 +466,7 @@ public class MainAgent extends Agent {
     // Método para registrar mensajes
     private void log(String message) {
         // Mostramos el mensaje por consola
-        System.out.println("[Main] " + message);
+        System.out.println(message);
 
         // Si los logs están habilitados, enviamos el mensaje a la interfaz
         if (verbose) {
