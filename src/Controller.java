@@ -31,6 +31,8 @@ public class Controller {
     @FXML
     private TextField feeField;
     @FXML
+    private Button exitButton;
+    @FXML
     private TableView<Player> playersTable;
     @FXML
     private TableColumn<Player, String> nameColumn;
@@ -183,6 +185,15 @@ public class Controller {
         feeField.setDisable(true);
     }
 
+    // Método para gestionar el botón de salir
+    @FXML
+    private void handleExitButtonAction() {
+        // Despertamos al hilo principal
+        mainAgent.continueTournament(0);
+        // Terminamos el programa
+        mainAgent.exitTournament();
+    }
+
     // Método para agregar jugadores a la tabla de jugadores
     public void addPlayer(Player player) {
         // Añadimos el jugador a la lista
@@ -260,7 +271,7 @@ public class Controller {
                 mainAgent.setDelay(delay);
             }
         } catch (NumberFormatException e) {
-            // Ignoramos el valor si no es correcto
+            // Ignoramos la excepción si el valor no es correcto
         }
     }
 

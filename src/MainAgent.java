@@ -96,14 +96,14 @@ public class MainAgent extends Agent {
                         // Si hay uno o cero jugadores, no se continúa
                     } else if (result.length == 1) {
                         log("Solo se ha encontrado un agente jugador");
-                        doDelete();
+                        exitTournament();
                     } else {
                         log("No se han encontrado agentes jugadores");
-                        doDelete();
+                        exitTournament();
                     }
                 } catch (FIPAException e) {
                     e.printStackTrace();
-                    doDelete();
+                    exitTournament();
                 }
             }
         });
@@ -129,6 +129,9 @@ public class MainAgent extends Agent {
 
                     log("Mensaje enviado a jugador con ID " + i + ": " + message);
                 }
+
+                // Actualizamos la tabla de los jugadores
+                updatePlayersTable();
 
                 // Iteramos sobre el número de rondas
                 for (int round = 1; round <= R; round++) {
@@ -308,11 +311,6 @@ public class MainAgent extends Agent {
         });
     }
 
-    @Override
-    protected void takeDown() {
-        log("Se ha terminado el agente principal");
-    }
-
     // Método para enviar un mensaje a un agente
     public void sendMessage(int performative, AID receiver, String message) {
         ACLMessage msg = new ACLMessage(performative);
@@ -382,7 +380,7 @@ public class MainAgent extends Agent {
         try {
             wait();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // Ignoramos la excepción si se termina el programa antes de empezar
         }
     }
 
@@ -398,7 +396,7 @@ public class MainAgent extends Agent {
             try {
                 wait();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                // Ignoramos la excepción si se termina el programa durante la pausa
             }
         }
     }
@@ -410,6 +408,19 @@ public class MainAgent extends Agent {
         MainAgent.F = F;
         // Despertamos al hilo
         notify();
+    }
+
+    // Método para finalizar el torneo
+    public void exitTournament() {
+        log("Se ha terminado el agente principal");
+
+        Platform.runLater(() -> {
+            // TODO: check this after fixing log() performance
+            // Cerramos la interfaz gráfica
+            Platform.exit();
+            // Salimos del programa
+            System.exit(0);
+        });
     }
 
     // Método para buscar un jugador por su ID
@@ -447,9 +458,7 @@ public class MainAgent extends Agent {
         // Si queda uno o cero jugadores, no se continúa
         if (players.size() < 2) {
             log("No quedan suficientes jugadores");
-            doDelete();
-            // TODO: eliminar todos los comportamientos antes del doDelete()
-            System.exit(-1);
+            exitTournament();
         }
         // Vaciamos la lista de jugadores para eliminar
         playersToRemove.clear();
@@ -469,7 +478,7 @@ public class MainAgent extends Agent {
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // Ignoramos la excepción si se termina el programa durante el delay
         }
 
         // Comprobamos si se ha pulsado el botón de pausa
