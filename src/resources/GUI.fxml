@@ -199,6 +199,9 @@
                <font>
                   <Font size="16.0" />
                </font>
+               <tooltip>
+                  <Tooltip text="Exits the tournament" />
+               </tooltip>
             </Button>
          </children>
          <padding>
