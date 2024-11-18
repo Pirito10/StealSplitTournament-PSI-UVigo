@@ -19,14 +19,14 @@
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
-      <VBox fx:id="columnLeft" alignment="CENTER" HBox.hgrow="ALWAYS">
+      <VBox fx:id="columnLeft" alignment="CENTER">
          <children>
-            <Label text="TITLE">
+            <Label fx:id="titleLabel" text="Steal-Split Tournament">
                <font>
-                  <Font name="System Bold" size="20.0" />
+                  <Font name="System Bold" size="26.0" />
                </font>
             </Label>
-            <HBox fx:id="tournamentButtonsBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="60.0" VBox.vgrow="ALWAYS">
+            <HBox fx:id="tournamentButtonsBox" alignment="CENTER" prefHeight="100.0" spacing="40.0" VBox.vgrow="ALWAYS">
                <children>
                   <Button fx:id="startButton" mnemonicParsing="false" onAction="#handleStartButtonAction" text="Start">
                      <font>
@@ -57,7 +57,7 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <HBox fx:id="parametersBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="40.0" VBox.vgrow="ALWAYS">
+            <HBox fx:id="parametersBox" alignment="CENTER" prefHeight="100.0" spacing="40.0" VBox.vgrow="ALWAYS">
                <children>
                   <VBox fx:id="roundsBox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="NEVER">
                      <children>
@@ -97,7 +97,7 @@
             </HBox>
             <HBox fx:id="matrixBox" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                  <VBox alignment="CENTER" prefHeight="200.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Payoff Matrix">
                            <font>
@@ -167,7 +167,7 @@
                   </VBox>
                </children>
             </HBox>
-            <VBox fx:id="aboutBox" alignment="CENTER" maxHeight="-Infinity" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <VBox fx:id="aboutBox" alignment="CENTER" maxHeight="-Infinity" prefHeight="200.0" VBox.vgrow="ALWAYS">
                <children>
                   <Label text="Aarón Riveiro Vilar">
                      <font>
