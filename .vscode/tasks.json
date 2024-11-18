@@ -14,7 +14,8 @@
                 "'lib/jade.jar;lib/javafx/lib'",
                 "-d",
                 "bin",
-                "src/*.java"
+                "src/*.java",
+                "src/agents/*.java"
             ],
             "group": "build",
             "detail": "Compila todos los archivos Java"
@@ -32,7 +33,7 @@
                 "'lib/jade.jar;bin;src/resources'",
                 "jade.Boot",
                 "-agents",
-                "'MainAgent:MainAgent;RandomAgent1:RandomAgent;RandomAgent2:RandomAgent;RandomAgent3:RandomAgent;RandomAgent4:RandomAgent'"
+                "'MainAgent:MainAgent;RandomAgent1:agents.RandomAgent;RandomAgent2:agents.RandomAgent;RandomAgent3:agents.RandomAgent;RandomAgent4:agents.RandomAgent'"
             ],
             "group": "test",
             "dependsOn": "Compilar",

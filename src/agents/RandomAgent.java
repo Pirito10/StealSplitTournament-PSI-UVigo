@@ -1,3 +1,4 @@
+package agents;
 import java.text.DecimalFormat;
 import java.util.Random;
 
