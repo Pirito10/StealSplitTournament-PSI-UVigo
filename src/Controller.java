@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -65,6 +66,12 @@ public class Controller {
 
     // Lista para almacenar los jugadores
     private static ArrayList<Player> players = new ArrayList<>();
+
+    // Búffer para acumular mensajes
+    private final StringBuilder logBuffer = new StringBuilder();
+
+    // Timestamp de la última actualización del área de texto de logs
+    private long lastUpdate = 0;
 
     // Variable para controlar el estado del torneo
     private boolean tournamentFinished = false;
@@ -230,9 +237,25 @@ public class Controller {
         updatePlayersTable();
     }
 
-    // Método para añadir un mensaje al área de texto de log
+    // Método para añadir un mensaje al área de texto de logs
     public void logMessage(String message) {
-        logTextArea.appendText(message + "\n");
+        // Añadimos el mensaje al buffer
+        logBuffer.append(message + "\n");
+
+        // Verificamos si han pasado 50 milisegundos desde la última actualización del
+        // área de texto
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastUpdate >= 50) {
+            lastUpdate = currentTime;
+
+            // Actualizamos el área de texto
+            Platform.runLater(() -> {
+                // Añadimos el contenido del buffer
+                logTextArea.appendText(logBuffer.toString());
+                // Reiniciamos el buffer
+                logBuffer.setLength(0);
+            });
+        }
     }
 
     // Método para gestionar el botón de verbose

@@ -415,7 +415,6 @@ public class MainAgent extends Agent {
         log("Se ha terminado el agente principal");
 
         Platform.runLater(() -> {
-            // TODO: check this after fixing log() performance
             // Cerramos la interfaz gráfica
             Platform.exit();
             // Salimos del programa
