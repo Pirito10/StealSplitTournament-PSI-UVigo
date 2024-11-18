@@ -301,8 +301,9 @@ public class MainAgent extends Agent {
                     updatePlayersTable();
                 }
 
-                // Mostramos los resultados con una alerta
-                Platform.runLater(() -> controller.showTournamentResults(getTournamentResults()));
+                // Deshabilitamos todos los botones y campos, y mostramos los resultados con una
+                // alerta
+                Platform.runLater(() -> controller.finishTournament(getTournamentResults()));
             }
         });
     }

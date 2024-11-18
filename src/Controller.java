@@ -64,6 +64,9 @@ public class Controller {
     // Lista para almacenar los jugadores
     private static ArrayList<Player> players = new ArrayList<>();
 
+    // Variable para controlar el estado del torneo
+    private boolean tournamentFinished = false;
+
     // Referencia al agente principal
     private MainAgent mainAgent;
 
@@ -96,6 +99,9 @@ public class Controller {
 
                     // Configuramos la acción del botón
                     removePlayerButton.setOnAction(_ -> handleRemovePlayerButtonAction(currentPlayer));
+
+                    // Configuramos su estado
+                    removePlayerButton.setDisable(tournamentFinished);
 
                     // Ponemos el botón en la celda
                     setGraphic(removePlayerButton);
@@ -258,8 +264,22 @@ public class Controller {
         }
     }
 
-    // Método para mostrar una alerta al terminal el torneo
-    public void showTournamentResults(String results) {
+    // Método para deshabilitar todos los botones y campos, y mostrar una alerta con
+    // los resultados del torneo
+    public void finishTournament(String results) {
+
+        // Marcamos que ha terminado el torneo y actualizamos la tabla de los jugadores
+        tournamentFinished = true;
+        updatePlayersTable();
+
+        // Deshabilitamos todos los botones y campos
+        stopButton.setDisable(true);
+        resetButton.setDisable(true);
+        verboseButton.setDisable(true);
+        clearButton.setDisable(true);
+        delayField.setDisable(true);
+        delayButton.setDisable(true);
+
         // Creamos una alerta de tipo INFORMATION
         Alert alert = new Alert(AlertType.INFORMATION);
         // Ponemos título a la ventana
