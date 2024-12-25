@@ -17,11 +17,11 @@ public class RL_Agent extends Agent {
     // Variables para almacenar el ID del agente, el del rival, el número de
     // jugadores, de rondas
     // y el porcentaje de comisión
-    private static int ID, ID_rival, N, R;
-    private static double F;
+    private int ID, opponentID, N, R;
+    private double F;
 
-    // HashMap para almacenar el historial de acciones de cada jugador
-    private HashMap<Integer, HashMap<Integer, String>> history = new HashMap<>();
+    // Mapa para almacenar la tabla Q de cada oponente
+    private HashMap<Integer, HashMap<String, Double>> qTables = new HashMap<>();
 
     @Override
     protected void setup() {
@@ -72,11 +72,17 @@ public class RL_Agent extends Agent {
                     R = Integer.parseInt(partes[2].split(",")[1]);
                     F = Double.parseDouble(partes[2].split(",")[2]);
 
-                    // Inicializamos el historial de cada jugador
+                    // Inicializamos la tabla Q de cada jugador
                     for (int i = 0; i < N; i++) {
                         // Excluímos nuestro propio ID
                         if (i != ID) {
-                            history.put(i, new HashMap<>());
+                            // Creamos un mapa que representa la tabla Q
+                            HashMap<String, Double> qValues = new HashMap<>();
+                            // Le damos valores inciales a las acciones, favoreciendo la D
+                            qValues.put("C", 0.0);
+                            qValues.put("D", 1.0);
+                            // Añadimos la tabla Q al mapa de tablas Q
+                            qTables.put(i, qValues);
                         }
                     }
                 }
@@ -89,27 +95,31 @@ public class RL_Agent extends Agent {
                     int ID1 = Integer.parseInt(partes[1]);
                     int ID2 = Integer.parseInt(partes[2]);
 
-                    // Buscamos el ID del rival
+                    // Buscamos el ID del oponente
                     if (ID1 == ID) {
-                        ID_rival = ID2;
+                        opponentID = ID2;
                     } else {
-                        ID_rival = ID1;
+                        opponentID = ID1;
                     }
                 }
                 // Si es un mensaje de solicitud de acción...
                 else if (message.startsWith("Action")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Seleccionamos una respuesta aleatoriamente y construímos el mensaje
-                    String action = new Random().nextBoolean() ? "D" : "C";
+                    // Obtenemos la tabla Q del oponente
+                    HashMap<String, Double> opponentQTable = qTables.getOrDefault(opponentID, new HashMap<>());
+
+                    // Elegimos la acción que maximice la recompensa esperada y construímos el
+                    // mensaje
+                    String action = opponentQTable.get("C") >= opponentQTable.get("D") ? "C" : "D";
                     String reply = "Action#" + action;
 
                     // Enviamos el mensaje
                     sendReply(ACLMessage.INFORM, msg, reply);
                     System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
-
-                    // Si es un mensaje de resultados...
-                } else if (message.startsWith("Results")) {
+                }
+                // Si es un mensaje de resultados...
+                else if (message.startsWith("Results")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Si es un mensaje de fin de ronda...
