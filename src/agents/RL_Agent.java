@@ -2,7 +2,7 @@ package agents;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.LinkedList;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -25,6 +25,13 @@ public class RL_Agent extends Agent {
 
     // Mapa para almacenar la tabla Q de cada oponente
     private HashMap<Integer, HashMap<String, Double>> qTables = new HashMap<>();
+
+    // Variables para almacenar el historial de inflación y precios de los stocks
+    private LinkedList<Double> inflationHistory = new LinkedList<>();
+    private LinkedList<Double> stockPriceHistory = new LinkedList<>();
+
+    // Tamaño de la ventana deslizante para las predicciones
+    private static final int WINDOW_SIZE = 20;
 
     @Override
     protected void setup() {
@@ -142,43 +149,23 @@ public class RL_Agent extends Agent {
                     // Extraemos del contenido toda la información necesaria
                     String[] partes = message.split("#");
                     double totalPayoff = Double.parseDouble(partes[3]);
+                    double inflationRate = Double.parseDouble(partes[4]);
                     double stocks = Double.parseDouble(partes[5]);
                     double stockValue = Double.parseDouble(partes[6]);
 
-                    // Seleccionamos una acción aleatoriamente
-                    String action;
-                    action = new Random().nextBoolean() ? "Buy" : "Sell";
+                    // Actualizamos los historiales de inflación y precios de los stocks
+                    updateHistory(inflationHistory, inflationRate);
+                    updateHistory(stockPriceHistory, stockValue);
 
-                    // Seleccionamos una cantidad
-                    double amount;
-                    // Si es compra, comprobamos si podemos comprar
-                    if (action.equals("Buy")) {
-                        if (totalPayoff == 0) {
-                            amount = 0;
-                        } else {
-                            // Entre 0 y el máximo que podemos comprar con lo que tenemos
-                            amount = new Random().nextDouble(totalPayoff / stockValue);
-                        }
-                        // Si es venta, comprobamos si podemos vender
-                    } else if (stocks == 0) {
-                        amount = 0;
-                    } else {
-                        // Entre 0 y todo el stock que tenemos
-                        amount = new Random().nextDouble(stocks);
-                    }
-
-                    // Redondeamos la cantidad a dos dígitos decimales
-                    amount = Double.parseDouble((new DecimalFormat("#.##")).format(amount));
-
-                    // Construímos el mensaje
-                    String reply = action + "#" + amount;
+                    // Tomamos la mejor decisión basada en predicciones futuras
+                    String reply = makeDecision(totalPayoff, stocks, stockValue, inflationRate, F);
 
                     // Enviamos el mensaje
                     sendReply(ACLMessage.INFORM, msg, reply);
                     System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
-
-                    // Si es un mensaje de contabilidad...
-                } else if (message.startsWith("Accounting")) {
+                }
+                // Si es un mensaje de contabilidad...
+                else if (message.startsWith("Accounting")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Si es un mensaje de fin de torneo...
@@ -209,5 +196,63 @@ public class RL_Agent extends Agent {
         msg.setContent(message);
         msg.setPerformative(performative);
         send(msg);
+    }
+
+    // Método para actualizar un historial
+    private void updateHistory(LinkedList<Double> history, double newValue) {
+        // Si el historial es demasiado grande, eliminamos el valor más antiguo
+        if (history.size() >= WINDOW_SIZE) {
+            history.removeFirst();
+        }
+        // Añadimos el nuevo valor
+        history.addLast(newValue);
+    }
+
+    // Método para predecir el valor de la próxima ronda basado en un historial
+    private double predictNextValue(LinkedList<Double> history) {
+        // Si no hay datos, devolvemos un valor predeterminado
+        if (history.isEmpty()) {
+            return 0.0;
+        }
+        // Devolvemos un promedio basado en el historial
+        return history.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+    }
+
+    // Método para tomar la decisión de acción y cantidad basada en predicciones
+    private String makeDecision(
+            double totalPayoff, double stocks, double stockValue, double inflationRate, double commissionRate) {
+
+        // Predecimos los valores futuros
+        double predictedInflation = predictNextValue(inflationHistory);
+        double predictedStockPrice = predictNextValue(stockPriceHistory);
+
+        // Variables para almacenar la acción y la cantidad
+        String action;
+        double amount = 0.0;
+
+        // Si se espera un aumento significativo en el precio de los stocks (más de un
+        // 10% sobre el valor actual) o inflación alta (superior al 10%), compramos lo
+        // máximo posible
+        if (predictedStockPrice > stockValue * 1.1 || predictedInflation > 0.1) {
+            action = "Buy";
+            amount = totalPayoff / stockValue;
+        }
+        // Si se espera una caída significativa en el precio de los stocks (más de 10%
+        // bajo el valor actual), vendemos todo
+        else if (predictedStockPrice * (1 - commissionRate) < stockValue * 0.9 && stocks > 0) {
+            action = "Sell";
+            amount = stocks;
+        }
+        // Si no hay cambios significativos, mantenemos lo que tenemos
+        else {
+            action = "Buy";
+            amount = 0.0;
+        }
+
+        // Redondeamos la cantidad a dos dígitos decimales
+        amount = Double.parseDouble((new DecimalFormat("#.##")).format(amount));
+
+        // Construímos y devolvemos el mensaje
+        return action + "#" + amount;
     }
 }
