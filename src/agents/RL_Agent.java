@@ -15,9 +15,8 @@ import jade.lang.acl.ACLMessage;
 public class RL_Agent extends Agent {
 
     // Variables para almacenar el ID del agente, el del rival, el número de
-    // jugadores, de rondas
-    // y el porcentaje de comisión
-    private int ID, opponentID, N, R;
+    // jugadores y el porcentaje de comisión
+    private int ID, opponentID, N;
     private double F;
 
     // Variable para almacenar la acción a realizar
@@ -70,108 +69,132 @@ public class RL_Agent extends Agent {
                 ACLMessage msg = blockingReceive();
                 String message = msg.getContent();
 
-                // Si es un mensaje de preparación de la competición...
-                if (message.startsWith("Id")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                switch (message.split("#")[0]) {
+                    // Si es un mensaje de preparación de la competición...
+                    case "Id": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Extraemos del contenido el ID, el número de jugadores, de rondas y el
-                    // porcentaje de comisión
-                    String[] partes = message.split("#");
-                    ID = Integer.parseInt(partes[1]);
-                    N = Integer.parseInt(partes[2].split(",")[0]);
-                    R = Integer.parseInt(partes[2].split(",")[1]);
-                    F = Double.parseDouble(partes[2].split(",")[2]);
+                        // Extraemos del contenido el ID, el número de jugadores y el
+                        // porcentaje de comisión
+                        String[] partes = message.split("#");
+                        ID = Integer.parseInt(partes[1]);
+                        N = Integer.parseInt(partes[2].split(",")[0]);
+                        F = Double.parseDouble(partes[2].split(",")[2]);
 
-                    // Inicializamos la tabla Q de cada jugador
-                    for (int i = 0; i < N; i++) {
-                        // Excluímos nuestro propio ID
-                        if (i != ID) {
-                            // Creamos un mapa que representa la tabla Q
-                            HashMap<String, Double> qValues = new HashMap<>();
-                            // Le damos valores inciales a las acciones, favoreciendo la D
-                            qValues.put("C", 2.0);
-                            qValues.put("D", 2.2);
-                            // Añadimos la tabla Q al mapa de tablas Q
-                            qTables.put(i, qValues);
+                        // Inicializamos la tabla Q de cada jugador
+                        for (int i = 0; i < N; i++) {
+                            // Excluímos nuestro propio ID
+                            if (i != ID) {
+                                // Creamos un mapa que representa la tabla Q
+                                HashMap<String, Double> qValues = new HashMap<>();
+                                // Le damos valores inciales a las acciones, favoreciendo la D
+                                qValues.put("C", 2.0);
+                                qValues.put("D", 2.2);
+                                // Añadimos la tabla Q al mapa de tablas Q
+                                qTables.put(i, qValues);
+                            }
                         }
+
+                        break;
                     }
-                }
-                // Si es un mensaje de nueva ronda...
-                else if (message.startsWith("NewGame")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Extraemos del contenido los IDs de los jugadores
-                    String[] partes = message.split("#");
-                    int ID1 = Integer.parseInt(partes[1]);
-                    int ID2 = Integer.parseInt(partes[2]);
+                    // Si es un mensaje de nueva ronda...
+                    case "NewGame": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Buscamos el ID del oponente
-                    opponentID = (ID1 == ID) ? ID2 : ID1;
-                }
-                // Si es un mensaje de solicitud de acción...
-                else if (message.startsWith("Action")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // Extraemos del contenido los IDs de los jugadores
+                        String[] partes = message.split("#");
+                        int ID1 = Integer.parseInt(partes[1]);
+                        int ID2 = Integer.parseInt(partes[2]);
 
-                    // Obtenemos la tabla Q del oponente
-                    HashMap<String, Double> opponentQTable = qTables.get(opponentID);
+                        // Buscamos el ID del oponente
+                        opponentID = (ID1 == ID) ? ID2 : ID1;
 
-                    // Elegimos la acción que maximice la recompensa esperada y construímos el
-                    // mensaje
-                    action = opponentQTable.get("C") >= opponentQTable.get("D") ? "C" : "D";
-                    String reply = "Action#" + action;
+                        break;
+                    }
 
-                    // Enviamos el mensaje
-                    sendReply(ACLMessage.INFORM, msg, reply);
-                    System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
-                }
-                // Si es un mensaje de resultados...
-                else if (message.startsWith("Results")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                    // Si es un mensaje de solicitud de acción...
+                    case "Action": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Extraemos del contenido el payoff
-                    String[] partes = message.split("#");
-                    String[] payoffs = partes[3].split(",");
-                    double payoff = (ID == Integer.parseInt(partes[1].split(",")[0])) ? Double.parseDouble(payoffs[0])
-                            : Double.parseDouble(payoffs[1]);
+                        // Obtenemos la tabla Q del oponente
+                        HashMap<String, Double> opponentQTable = qTables.get(opponentID);
 
-                    // Obtenemos la tabla Q del oponente
-                    HashMap<String, Double> opponentQTable = qTables.get(opponentID);
-                    // Obtenemos el valor de la acción que realizamos
-                    double currentQValue = opponentQTable.getOrDefault(action, 0.0);
-                    // Calculamos el nuevo valor para la acción y lo guardamos en la tabla Q
-                    double updatedQValue = currentQValue + 0.1 * (payoff - currentQValue);
-                    opponentQTable.put(action, updatedQValue);
-                }
-                // Si es un mensaje de fin de ronda...
-                else if (message.startsWith("RoundOver")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // Elegimos la acción que maximice la recompensa esperada y construímos el
+                        // mensaje
+                        action = opponentQTable.get("C") >= opponentQTable.get("D") ? "C" : "D";
+                        String reply = "Action#" + action;
 
-                    // Extraemos del contenido toda la información necesaria
-                    String[] partes = message.split("#");
-                    double totalPayoff = Double.parseDouble(partes[3]);
-                    double inflationRate = Double.parseDouble(partes[4]);
-                    double stocks = Double.parseDouble(partes[5]);
-                    double stockValue = Double.parseDouble(partes[6]);
+                        // Enviamos el mensaje
+                        sendReply(ACLMessage.INFORM, msg, reply);
+                        System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
 
-                    // Actualizamos los historiales de inflación y precios de los stocks
-                    updateHistory(inflationHistory, inflationRate);
-                    updateHistory(stockPriceHistory, stockValue);
+                        break;
+                    }
 
-                    // Tomamos la mejor decisión basada en predicciones futuras
-                    String reply = makeDecision(totalPayoff, stocks, stockValue, inflationRate, F);
+                    // Si es un mensaje de resultados...
+                    case "Results": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Enviamos el mensaje
-                    sendReply(ACLMessage.INFORM, msg, reply);
-                    System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
-                }
-                // Si es un mensaje de contabilidad...
-                else if (message.startsWith("Accounting")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // Extraemos del contenido el payoff
+                        String[] partes = message.split("#");
+                        String[] payoffs = partes[3].split(",");
+                        double payoff = (ID == Integer.parseInt(partes[1].split(",")[0]))
+                                ? Double.parseDouble(payoffs[0])
+                                : Double.parseDouble(payoffs[1]);
+
+                        // Obtenemos la tabla Q del oponente
+                        HashMap<String, Double> opponentQTable = qTables.get(opponentID);
+                        // Obtenemos el valor de la acción que realizamos
+                        double currentQValue = opponentQTable.getOrDefault(action, 0.0);
+                        // Calculamos el nuevo valor para la acción y lo guardamos en la tabla Q
+                        double updatedQValue = currentQValue + 0.1 * (payoff - currentQValue);
+                        opponentQTable.put(action, updatedQValue);
+
+                        break;
+                    }
+
+                    // Si es un mensaje de fin de ronda...
+                    case "RoundOver": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+
+                        // Extraemos del contenido toda la información necesaria
+                        String[] partes = message.split("#");
+                        double totalPayoff = Double.parseDouble(partes[3]);
+                        double inflationRate = Double.parseDouble(partes[4]);
+                        double stocks = Double.parseDouble(partes[5]);
+                        double stockValue = Double.parseDouble(partes[6]);
+
+                        // Actualizamos los historiales de inflación y precios de los stocks
+                        updateHistory(inflationHistory, inflationRate);
+                        updateHistory(stockPriceHistory, stockValue);
+
+                        // Tomamos la mejor decisión basada en predicciones futuras
+                        String reply = makeDecision(totalPayoff, stocks, stockValue, inflationRate, F);
+
+                        // Enviamos el mensaje
+                        sendReply(ACLMessage.INFORM, msg, reply);
+                        System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
+
+                        break;
+                    }
+
+                    // Si es un mensaje de contabilidad...
+                    case "Accounting": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // No hacemos nada
+
+                        break;
+                    }
 
                     // Si es un mensaje de fin de torneo...
-                } else if (message.startsWith("GameOver")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-                    doDelete();
+                    case "GameOver": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // Eliminamos el agente
+                        doDelete();
+
+                        break;
+                    }
                 }
             }
         });
