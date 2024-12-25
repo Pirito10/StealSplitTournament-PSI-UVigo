@@ -52,94 +52,113 @@ public class RandomAgent extends Agent {
                 ACLMessage msg = blockingReceive();
                 String message = msg.getContent();
 
-                // Si es un mensaje de preparación de la competición...
-                if (message.startsWith("Id")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                switch (message.split("#")[0]) {
+                    // Si es un mensaje de preparación de la competición...
+                    case "Id": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Extraemos del contenido el ID
-                    String[] partes = message.split("#");
-                    ID = Integer.parseInt(partes[1]);
+                        // Extraemos del contenido el ID
+                        String[] partes = message.split("#");
+                        ID = Integer.parseInt(partes[1]);
 
-                }
-                // Si es un mensaje de nueva ronda...
-                else if (message.startsWith("NewGame")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-
-                }
-                // Si es un mensaje de solicitud de acción...
-                else if (message.startsWith("Action")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-
-                    // Seleccionamos una respuesta aleatoriamente y construímos el mensaje
-                    String action = new Random().nextBoolean() ? "D" : "C";
-                    String reply = "Action#" + action;
-
-                    // Enviamos el mensaje
-                    sendReply(ACLMessage.INFORM, msg, reply);
-                    System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
-
-                }
-                // Si es un mensaje de resultados...
-                else if (message.startsWith("Results")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-
-                }
-                // Si es un mensaje de fin de ronda...
-                else if (message.startsWith("RoundOver")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-
-                    // Extraemos del contenido toda la información necesaria
-                    String[] partes = message.split("#");
-                    double totalPayoff = Double.parseDouble(partes[3]);
-                    double stocks = Double.parseDouble(partes[5]);
-                    double stockValue = Double.parseDouble(partes[6]);
-
-                    // Seleccionamos una acción aleatoriamente
-                    String action;
-                    action = new Random().nextBoolean() ? "Buy" : "Sell";
-
-                    // Seleccionamos una cantidad
-                    double amount;
-                    // Si es compra, comprobamos si podemos comprar
-                    if (action.equals("Buy")) {
-                        if (totalPayoff == 0) {
-                            amount = 0;
-                        } else {
-                            // Entre 0 y el máximo que podemos comprar con lo que tenemos
-                            amount = new Random().nextDouble(totalPayoff / stockValue);
-                        }
-                        // Si es venta, comprobamos si podemos vender
-                    } else if (stocks == 0) {
-                        amount = 0;
-                    } else {
-                        // Entre 0 y todo el stock que tenemos
-                        amount = new Random().nextDouble(stocks);
+                        break;
                     }
 
-                    // Redondeamos la cantidad a dos dígitos decimales
-                    amount = Double.parseDouble((new DecimalFormat("#.##")).format(amount));
+                    // Si es un mensaje de nueva ronda...
+                    case "NewGame": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // No hacemos nada
 
-                    // Construímos el mensaje
-                    String reply = action + "#" + amount;
+                        break;
+                    }
 
-                    // Enviamos el mensaje
-                    sendReply(ACLMessage.INFORM, msg, reply);
-                    System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
+                    // Si es un mensaje de solicitud de acción...
+                    case "Action": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                }
-                // Si es un mensaje de contabilidad...
-                else if (message.startsWith("Accounting")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // Seleccionamos una respuesta aleatoriamente y construímos el mensaje
+                        String action = new Random().nextBoolean() ? "D" : "C";
+                        String reply = "Action#" + action;
 
-                }
-                // Si es un mensaje de fin de torneo...
-                else if (message.startsWith("GameOver")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-                    doDelete();
+                        // Enviamos el mensaje
+                        sendReply(ACLMessage.INFORM, msg, reply);
+                        System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
+
+                        break;
+                    }
+
+                    // Si es un mensaje de resultados...
+                    case "Results": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // No hacemos nada
+
+                        break;
+                    }
+
+                    // Si es un mensaje de fin de ronda...
+                    case "RoundOver": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+
+                        // Extraemos del contenido toda la información necesaria
+                        String[] partes = message.split("#");
+                        double totalPayoff = Double.parseDouble(partes[3]);
+                        double stocks = Double.parseDouble(partes[5]);
+                        double stockValue = Double.parseDouble(partes[6]);
+
+                        // Seleccionamos una acción aleatoriamente
+                        String action;
+                        action = new Random().nextBoolean() ? "Buy" : "Sell";
+
+                        // Seleccionamos una cantidad
+                        double amount;
+                        // Si es compra, comprobamos si podemos comprar
+                        if (action.equals("Buy")) {
+                            if (totalPayoff == 0) {
+                                amount = 0;
+                            } else {
+                                // Entre 0 y el máximo que podemos comprar con lo que tenemos
+                                amount = new Random().nextDouble(totalPayoff / stockValue);
+                            }
+                            // Si es venta, comprobamos si podemos vender
+                        } else if (stocks == 0) {
+                            amount = 0;
+                        } else {
+                            // Entre 0 y todo el stock que tenemos
+                            amount = new Random().nextDouble(stocks);
+                        }
+
+                        // Redondeamos la cantidad a dos dígitos decimales
+                        amount = Double.parseDouble((new DecimalFormat("#.##")).format(amount));
+
+                        // Construímos el mensaje
+                        String reply = action + "#" + amount;
+
+                        // Enviamos el mensaje
+                        sendReply(ACLMessage.INFORM, msg, reply);
+                        System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
+
+                        break;
+                    }
+
+                    // Si es un mensaje de contabilidad...
+                    case "Accounting": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // No hacemos nada
+
+                        break;
+                    }
+
+                    // Si es un mensaje de fin de torneo...
+                    case "GameOver": {
+                        System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                        // Eliminamos el agente
+                        doDelete();
+
+                        break;
+                    }
                 }
             }
         });
-
     }
 
     @Override
