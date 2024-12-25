@@ -1,6 +1,7 @@
 package agents;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Random;
 
 import jade.core.Agent;
@@ -13,7 +14,14 @@ import jade.lang.acl.ACLMessage;
 
 public class RL_Agent extends Agent {
 
-    private int ID; // Variable para almacenar el ID del agente
+    // Variables para almacenar el ID del agente, el del rival, el número de
+    // jugadores, de rondas
+    // y el porcentaje de comisión
+    private static int ID, ID_rival, N, R;
+    private static double F;
+
+    // HashMap para almacenar el historial de acciones de cada jugador
+    private HashMap<Integer, HashMap<Integer, String>> history = new HashMap<>();
 
     @Override
     protected void setup() {
@@ -54,18 +62,42 @@ public class RL_Agent extends Agent {
 
                 // Si es un mensaje de preparación de la competición...
                 if (message.startsWith("Id")) {
-                    // Extraemos del contenido el ID
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+
+                    // Extraemos del contenido el ID, el número de jugadores, de rondas y el
+                    // porcentaje de comisión
                     String[] partes = message.split("#");
                     ID = Integer.parseInt(partes[1]);
+                    N = Integer.parseInt(partes[2].split(",")[0]);
+                    R = Integer.parseInt(partes[2].split(",")[1]);
+                    F = Double.parseDouble(partes[2].split(",")[2]);
 
+                    // Inicializamos el historial de cada jugador
+                    for (int i = 0; i < N; i++) {
+                        // Excluímos nuestro propio ID
+                        if (i != ID) {
+                            history.put(i, new HashMap<>());
+                        }
+                    }
+                }
+                // Si es un mensaje de nueva ronda...
+                else if (message.startsWith("NewGame")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Si es un mensaje de nueva ronda...
-                } else if (message.startsWith("NewGame")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+                    // Extraemos del contenido los IDs de los jugadores
+                    String[] partes = message.split("#");
+                    int ID1 = Integer.parseInt(partes[1]);
+                    int ID2 = Integer.parseInt(partes[2]);
 
-                    // Si es un mensaje de solicitud de acción...
-                } else if (message.startsWith("Action")) {
+                    // Buscamos el ID del rival
+                    if (ID1 == ID) {
+                        ID_rival = ID2;
+                    } else {
+                        ID_rival = ID1;
+                    }
+                }
+                // Si es un mensaje de solicitud de acción...
+                else if (message.startsWith("Action")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Seleccionamos una respuesta aleatoriamente y construímos el mensaje
