@@ -20,6 +20,9 @@ public class RL_Agent extends Agent {
     private int ID, opponentID, N, R;
     private double F;
 
+    // Variable para almacenar la acción a realizar
+    private String action;
+
     // Mapa para almacenar la tabla Q de cada oponente
     private HashMap<Integer, HashMap<String, Double>> qTables = new HashMap<>();
 
@@ -79,8 +82,8 @@ public class RL_Agent extends Agent {
                             // Creamos un mapa que representa la tabla Q
                             HashMap<String, Double> qValues = new HashMap<>();
                             // Le damos valores inciales a las acciones, favoreciendo la D
-                            qValues.put("C", 0.0);
-                            qValues.put("D", 1.0);
+                            qValues.put("C", 2.0);
+                            qValues.put("D", 2.2);
                             // Añadimos la tabla Q al mapa de tablas Q
                             qTables.put(i, qValues);
                         }
@@ -96,22 +99,18 @@ public class RL_Agent extends Agent {
                     int ID2 = Integer.parseInt(partes[2]);
 
                     // Buscamos el ID del oponente
-                    if (ID1 == ID) {
-                        opponentID = ID2;
-                    } else {
-                        opponentID = ID1;
-                    }
+                    opponentID = (ID1 == ID) ? ID2 : ID1;
                 }
                 // Si es un mensaje de solicitud de acción...
                 else if (message.startsWith("Action")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Obtenemos la tabla Q del oponente
-                    HashMap<String, Double> opponentQTable = qTables.getOrDefault(opponentID, new HashMap<>());
+                    HashMap<String, Double> opponentQTable = qTables.get(opponentID);
 
                     // Elegimos la acción que maximice la recompensa esperada y construímos el
                     // mensaje
-                    String action = opponentQTable.get("C") >= opponentQTable.get("D") ? "C" : "D";
+                    action = opponentQTable.get("C") >= opponentQTable.get("D") ? "C" : "D";
                     String reply = "Action#" + action;
 
                     // Enviamos el mensaje
@@ -122,8 +121,22 @@ public class RL_Agent extends Agent {
                 else if (message.startsWith("Results")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Si es un mensaje de fin de ronda...
-                } else if (message.startsWith("RoundOver")) {
+                    // Extraemos del contenido el payoff
+                    String[] partes = message.split("#");
+                    String[] payoffs = partes[3].split(",");
+                    double payoff = (ID == Integer.parseInt(partes[1].split(",")[0])) ? Double.parseDouble(payoffs[0])
+                            : Double.parseDouble(payoffs[1]);
+
+                    // Obtenemos la tabla Q del oponente
+                    HashMap<String, Double> opponentQTable = qTables.get(opponentID);
+                    // Obtenemos el valor de la acción que realizamos
+                    double currentQValue = opponentQTable.getOrDefault(action, 0.0);
+                    // Calculamos el nuevo valor para la acción y lo guardamos en la tabla Q
+                    double updatedQValue = currentQValue + 0.1 * (payoff - currentQValue);
+                    opponentQTable.put(action, updatedQValue);
+                }
+                // Si es un mensaje de fin de ronda...
+                else if (message.startsWith("RoundOver")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Extraemos del contenido toda la información necesaria
