@@ -1,4 +1,5 @@
 package agents;
+
 import java.text.DecimalFormat;
 import java.util.Random;
 
@@ -53,18 +54,20 @@ public class RandomAgent extends Agent {
 
                 // Si es un mensaje de preparación de la competición...
                 if (message.startsWith("Id")) {
+                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
+
                     // Extraemos del contenido el ID
                     String[] partes = message.split("#");
                     ID = Integer.parseInt(partes[1]);
 
+                }
+                // Si es un mensaje de nueva ronda...
+                else if (message.startsWith("NewGame")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Si es un mensaje de nueva ronda...
-                } else if (message.startsWith("NewGame")) {
-                    System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
-
-                    // Si es un mensaje de solicitud de acción...
-                } else if (message.startsWith("Action")) {
+                }
+                // Si es un mensaje de solicitud de acción...
+                else if (message.startsWith("Action")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Seleccionamos una respuesta aleatoriamente y construímos el mensaje
@@ -75,12 +78,14 @@ public class RandomAgent extends Agent {
                     sendReply(ACLMessage.INFORM, msg, reply);
                     System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
 
-                    // Si es un mensaje de resultados...
-                } else if (message.startsWith("Results")) {
+                }
+                // Si es un mensaje de resultados...
+                else if (message.startsWith("Results")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Si es un mensaje de fin de ronda...
-                } else if (message.startsWith("RoundOver")) {
+                }
+                // Si es un mensaje de fin de ronda...
+                else if (message.startsWith("RoundOver")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
                     // Extraemos del contenido toda la información necesaria
@@ -121,17 +126,20 @@ public class RandomAgent extends Agent {
                     sendReply(ACLMessage.INFORM, msg, reply);
                     System.out.println("[Jugador " + ID + "] Mensaje enviado: " + reply);
 
-                    // Si es un mensaje de contabilidad...
-                } else if (message.startsWith("Accounting")) {
+                }
+                // Si es un mensaje de contabilidad...
+                else if (message.startsWith("Accounting")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                    // Si es un mensaje de fin de torneo...
-                } else if (message.startsWith("GameOver")) {
+                }
+                // Si es un mensaje de fin de torneo...
+                else if (message.startsWith("GameOver")) {
                     System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
                     doDelete();
                 }
             }
         });
+
     }
 
     @Override
