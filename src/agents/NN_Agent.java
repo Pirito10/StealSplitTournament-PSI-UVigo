@@ -19,11 +19,14 @@ public class NN_Agent extends Agent {
     private int ID, opponentID, N;
     private double F;
 
-    // Variable para almacenar la acción a realizar
-    private String action;
+    // Variable para almacenar el SOM (Self-Organizing Map)
+    private SOM som;
 
-    // Mapa para almacenar la tabla Q de cada oponente
-    private HashMap<Integer, HashMap<String, Double>> qTables = new HashMap<>();
+    // Tamaño de la cuadrícula del SOM
+    private static final int GRID_SIZE = 22;
+
+    // Mapa para almacenar el historial de cada oponente
+    private HashMap<Integer, LinkedList<String>> opponentsHistories = new HashMap<>();
 
     // Variables para almacenar el historial de inflación y precios de los stocks
     private LinkedList<Double> inflationHistory = new LinkedList<>();
@@ -81,19 +84,16 @@ public class NN_Agent extends Agent {
                         N = Integer.parseInt(partes[2].split(",")[0]);
                         F = Double.parseDouble(partes[2].split(",")[2]);
 
-                        // Inicializamos la tabla Q de cada jugador
+                        // Inicializamos el historial de cada oponente
                         for (int i = 0; i < N; i++) {
                             // Excluímos nuestro propio ID
                             if (i != ID) {
-                                // Creamos un mapa que representa la tabla Q
-                                HashMap<String, Double> qValues = new HashMap<>();
-                                // Le damos valores inciales a las acciones, favoreciendo la D
-                                qValues.put("C", 2.0);
-                                qValues.put("D", 2.2);
-                                // Añadimos la tabla Q al mapa de tablas Q
-                                qTables.put(i, qValues);
+                                opponentsHistories.put(i, new LinkedList<>());
                             }
                         }
+
+                        // Inicializamos el SOM con una cuadrícula 5x5 y entradas de tamaño 2 (C y D)
+                        som = new SOM(GRID_SIZE, 2);
 
                         break;
                     }
@@ -117,12 +117,44 @@ public class NN_Agent extends Agent {
                     case "Action": {
                         System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                        // Obtenemos la tabla Q del oponente
-                        HashMap<String, Double> opponentQTable = qTables.get(opponentID);
+                        // Obtenemos el historial del oponente
+                        LinkedList<String> opponentHistory = opponentsHistories.get(opponentID);
 
-                        // Elegimos la acción que maximice la recompensa esperada y construímos el
-                        // mensaje
-                        action = opponentQTable.get("C") >= opponentQTable.get("D") ? "C" : "D";
+                        // Creamos un vector de frecuencias para el SOM con dos valores (C y D)
+                        double[] opponentHistoryVector = new double[2];
+
+                        // Recorremos el historial actualizando el vector
+                        for (String action : opponentHistory) {
+                            if (action.equals("C")) {
+                                opponentHistoryVector[0] += 1;
+                            } else if (action.equals("D")) {
+                                opponentHistoryVector[1] += 1;
+                            }
+                        }
+
+                        // Normalizamos el vector
+                        double sum = opponentHistoryVector[0] + opponentHistoryVector[1];
+                        if (sum > 0) {
+                            opponentHistoryVector[0] /= sum;
+                            opponentHistoryVector[1] /= sum;
+                        }
+
+                        // Usamos el SOM para obtener la BMU (Best Matching Unit)
+                        String bmuPosition = som.sGetBMU(opponentHistoryVector, true);
+
+                        // Obtenemos las coordenadas de la BMU
+                        int x = Integer.parseInt(bmuPosition.split(",")[0]);
+                        int y = Integer.parseInt(bmuPosition.split(",")[1]);
+
+                        // Decidimos la acción según la distancia en la cuadrícula
+                        String action;
+                        if (x + y < GRID_SIZE / 2) {
+                            action = "C";
+                        } else {
+                            action = "D";
+                        }
+
+                        // Construímos el mensaje
                         String reply = "Action#" + action;
 
                         // Enviamos el mensaje
@@ -136,20 +168,14 @@ public class NN_Agent extends Agent {
                     case "Results": {
                         System.out.println("[Jugador " + ID + "] Mensaje recibido: " + message);
 
-                        // Extraemos del contenido el payoff
+                        // Extraemos del contenido la acción del oponente
                         String[] partes = message.split("#");
-                        String[] payoffs = partes[3].split(",");
-                        double payoff = (ID == Integer.parseInt(partes[1].split(",")[0]))
-                                ? Double.parseDouble(payoffs[0])
-                                : Double.parseDouble(payoffs[1]);
+                        String opponentAction = (ID == Integer.parseInt(partes[1].split(",")[0]))
+                                ? partes[2].split(",")[1]
+                                : partes[2].split(",")[0];
 
-                        // Obtenemos la tabla Q del oponente
-                        HashMap<String, Double> opponentQTable = qTables.get(opponentID);
-                        // Obtenemos el valor de la acción que realizamos
-                        double currentQValue = opponentQTable.getOrDefault(action, 0.0);
-                        // Calculamos el nuevo valor para la acción y lo guardamos en la tabla Q
-                        double updatedQValue = currentQValue + 0.1 * (payoff - currentQValue);
-                        opponentQTable.put(action, updatedQValue);
+                        // Actualizamos el historial del oponente
+                        opponentsHistories.get(opponentID).add(opponentAction);
 
                         break;
                     }
@@ -279,3 +305,118 @@ public class NN_Agent extends Agent {
         return action + "#" + amount;
     }
 }
+
+class SOM {
+    // WorldGrid.java, DlgInfoBrain.java
+    private int iGridSide; // Side of the SOM 2D grid
+    private int[][] iNumTimesBMU; // Number of times a cell has been a BMU
+    private int[] iBMU_Pos = new int[2]; // BMU position in the grid
+
+    private int iInputSize; // Size of the input vector
+    private int iRadio; // BMU radio to modify neurons
+    private double dLearnRate = 1.0; // Learning rate for this SOM
+    private double dDecLearnRate = 0.999; // Used to reduce the learning rate
+    private double[] dBMU_Vector = null; // BMU state
+    private double[][][] dGrid; // SOM square grid + vector state per neuron
+
+    /**
+     * This is the class constructor that creates the 2D SOM grid
+     * 
+     * @param iSideAux      the square side
+     * @param iInputSizeAux the dimensions for the input data
+     * 
+     */
+    public SOM(int iSideAux, int iInputSizeAux) {
+        iInputSize = iInputSizeAux;
+        iGridSide = iSideAux;
+        iRadio = iGridSide / 10;
+        dBMU_Vector = new double[iInputSize];
+        dGrid = new double[iGridSide][iGridSide][iInputSize];
+        iNumTimesBMU = new int[iGridSide][iGridSide];
+
+        vResetValues();
+    }
+
+    public void vResetValues() {
+        dLearnRate = 1.0;
+        iNumTimesBMU = new int[iGridSide][iGridSide];
+        iBMU_Pos[0] = -1;
+        iBMU_Pos[1] = -1;
+
+        for (int i = 0; i < iGridSide; i++) // Initializing the SOM grid/network
+            for (int j = 0; j < iGridSide; j++)
+                for (int k = 0; k < iInputSize; k++)
+                    dGrid[i][j][k] = Math.random();
+    }
+
+    public double[] dvGetBMU_Vector() {
+        return dBMU_Vector;
+    }
+
+    public double dGetLearnRate() {
+        return dLearnRate;
+    }
+
+    public double[] dGetNeuronWeights(int x, int y) {
+        return dGrid[x][y];
+    }
+
+    /**
+     * This is the main method that returns the coordinates of the BMU and trains
+     * its neighbors
+     * 
+     * @param dmInput contains the input vector
+     * @param bTrain  training or testing phases
+     * 
+     */
+    public String sGetBMU(double[] dmInput, boolean bTrain) {
+        int x = 0, y = 0;
+        double dNorm, dNormMin = Double.MAX_VALUE;
+        String sReturn;
+
+        for (int i = 0; i < iGridSide; i++) // Finding the BMU
+            for (int j = 0; j < iGridSide; j++) {
+                dNorm = 0;
+                for (int k = 0; k < iInputSize; k++) // Calculating the norm
+                    dNorm += (dmInput[k] - dGrid[i][j][k]) * ((dmInput[k] - dGrid[i][j][k]));
+
+                if (dNorm < dNormMin) {
+                    dNormMin = dNorm;
+                    x = i;
+                    y = j;
+                }
+            } // Leaving the loop with the x,y positions for the BMU
+
+        if (bTrain) {
+            int xAux = 0;
+            int yAux = 0;
+            for (int v = -iRadio; v <= iRadio; v++) // Adjusting the neighborhood
+                for (int h = -iRadio; h <= iRadio; h++) {
+                    xAux = x + h;
+                    yAux = y + v;
+
+                    if (xAux < 0) // Assuming a torus world
+                        xAux += iGridSide;
+                    else if (xAux >= iGridSide)
+                        xAux -= iGridSide;
+
+                    if (yAux < 0)
+                        yAux += iGridSide;
+                    else if (yAux >= iGridSide)
+                        yAux -= iGridSide;
+
+                    for (int k = 0; k < iInputSize; k++)
+                        dGrid[xAux][yAux][k] += dLearnRate * (dmInput[k] - dGrid[xAux][yAux][k]) / (1 + v * v + h * h);
+                }
+        }
+
+        sReturn = "" + x + "," + y;
+        iBMU_Pos[0] = x;
+        iBMU_Pos[1] = y;
+        dBMU_Vector = dGrid[x][y].clone();
+        iNumTimesBMU[x][y]++;
+        dLearnRate *= dDecLearnRate;
+
+        return sReturn;
+    }
+} // from the class SOM
