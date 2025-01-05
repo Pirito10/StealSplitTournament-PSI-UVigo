@@ -23,7 +23,7 @@ public class NN_Agent extends Agent {
     private SOM som;
 
     // Tamaño de la cuadrícula del SOM
-    private static final int GRID_SIZE = 22;
+    private static final int GRID_SIZE = 20;
 
     // Mapa para almacenar el historial de cada oponente
     private HashMap<Integer, LinkedList<String>> opponentsHistories = new HashMap<>();
