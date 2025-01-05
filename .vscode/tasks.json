@@ -33,7 +33,7 @@
                 "'lib/jade.jar;bin;src/resources'",
                 "jade.Boot",
                 "-agents",
-                "'MainAgent:MainAgent;NN_Agent1:agents.NN_Agent;NN_Agent2:agents.NN_Agent;RandomAgent:agents.RandomAgent;RL_Agent:agents.RL_Agent'"
+                "'MainAgent:MainAgent;RandomAgent1:agents.RandomAgent;RandomAgent2:agents.RandomAgent;RandomAgent3:agents.RandomAgent;RandomAgent4:agents.RandomAgent;RL_Agent1:agents.RL_Agent;RL_Agent2:agents.RL_Agent;RL_Agent3:agents.RL_Agent;RL_Agent4:agents.RL_Agent;NN_Agent1:agents.NN_Agent;NN_Agent2:agents.NN_Agent;NN_Agent3:agents.NN_Agent;NN_Agent4:agents.NN_Agent'"
             ],
             "group": "test",
             "dependsOn": "Compilar",
