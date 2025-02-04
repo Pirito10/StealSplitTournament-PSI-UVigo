@@ -12,6 +12,8 @@ The project features:
 - User-friendly interface for easy interaction and visualization.
 
 ## How To Run
+*The following instructions are for Windows only. If you are using another operating system, you will need to download the appropiate [JavaFX](https://gluonhq.com/products/javafx/) version for your system and adjust the compilation and execution commands accordingly.*
+
 ### Compilation
 Make sure you have a [Java JDK](https://www.oracle.com/java/technologies/downloads/) installed on your system. Then compile all Java classes and generate the `.class` files with:
 ```bash
