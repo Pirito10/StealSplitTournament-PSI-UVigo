@@ -22,7 +22,7 @@ This command creates the compiled files inside the `bin/` directory.
 ### Execution
 Once compiled, you can run the system with:
 ```bash
-java --module-path lib/javafx/lib --add-modules javafx.controls,javafx.fxml -classpath 'lib/jade.jar;bin;src/resources' jade.Boot -agents 'MainAgent:MainAgent;<Agent1>:agents.<Agent1Class>;<Agent2>:agents.<Agent2Class>...'
+java -p lib/javafx/lib --add-modules javafx.controls,javafx.fxml -cp 'lib/jade.jar;bin;src/resources' jade.Boot -agents 'MainAgent:MainAgent[;Agent1:agents.Agent1Class[;Agent2:agents.Agent2Class[;...]]]'
 ```
 
 ## About The Code
