@@ -6,11 +6,11 @@
             "type": "shell",
             "command": "javac",
             "args": [
-                "--module-path",
+                "-p",
                 "lib/javafx/lib",
                 "--add-modules",
                 "javafx.controls,javafx.fxml",
-                "-classpath",
+                "-cp",
                 "'lib/jade.jar;lib/javafx/lib'",
                 "-d",
                 "bin",
@@ -21,23 +21,23 @@
             "detail": "Compila todos los archivos Java"
         },
         {
-            "label": "Ejecutar partida",
+            "label": "Ejecutar",
             "type": "shell",
             "command": "java",
             "args": [
-                "--module-path",
+                "-p",
                 "lib/javafx/lib",
                 "--add-modules",
                 "javafx.controls,javafx.fxml",
-                "-classpath",
+                "-cp",
                 "'lib/jade.jar;bin;src/resources'",
                 "jade.Boot",
                 "-agents",
                 "'MainAgent:MainAgent;RandomAgent1:agents.RandomAgent;RandomAgent2:agents.RandomAgent;RandomAgent3:agents.RandomAgent;RandomAgent4:agents.RandomAgent;RL_Agent1:agents.RL_Agent;RL_Agent2:agents.RL_Agent;RL_Agent3:agents.RL_Agent;RL_Agent4:agents.RL_Agent;NN_Agent1:agents.NN_Agent;NN_Agent2:agents.NN_Agent;NN_Agent3:agents.NN_Agent;NN_Agent4:agents.NN_Agent'"
             ],
             "group": "test",
-            "dependsOn": "Compilar",
-            "problemMatcher": []
+            "detail": "Ejecuta el programa",
+            "dependsOn": "Compilar"
         }
     ]
 }
