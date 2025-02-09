@@ -26,11 +26,17 @@ Once compiled, you can run the system with:
 ```bash
 java -p lib/javafx/lib --add-modules javafx.controls,javafx.fxml -cp 'lib/jade.jar;bin;src/resources' jade.Boot -agents 'MainAgent:MainAgent[;Agent1:agents.Agent1Class[;Agent2:agents.Agent2Class[;...]]]'
 ```
+#### Agents
 | Option | Description | Example |
 |--------|-------------|---------|
 | `RandomAgent` | Selects actions randomly without a predefined strategy | `Agent1:agents.RandomAgent` |
 | `RL_Agent` | Uses reinforcement learning to adapt based on past interactions | `Agent2:agents.RL_Agent` |
 | `NN_Agent` | Implements a neural network-based decision model for complex strategies | `Agent3:agents.NN_Agent` |
+
+#### Example
+```bash
+java -p lib/javafx/lib --add-modules javafx.controls,javafx.fxml -cp 'lib/jade.jar;bin;src/resources' jade.Boot -agents 'MainAgent:MainAgent;Agent1:agents.RandomAgent;Agent2:agents.RL_Agent;Agent3:agents.NN_Agent'
+```
 
 ## About The Code
 Refer to [`Specifications.pdf`](docs/Specifications.pdf) for an in-depth explanation of the project, the game mechanics, the communication between agents, the tournament structure, and more.
